@@ -1,15 +1,20 @@
+import { hapticTick } from "../lib/haptics.js";
+
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
 export default function RepsPicker({
-  value = 1,
-  onChange = () => { },
-  min = 1,
-  max = 50
+  value = 5,
+  onChange = () => {},
+  min = 5,
+  max = 30
 }) {
   const handleAdjust = (nextValue) => {
     const adjusted = clamp(Math.round(nextValue), min, max);
+    if (adjusted !== value) {
+      hapticTick();
+    }
     onChange(adjusted);
   };
 

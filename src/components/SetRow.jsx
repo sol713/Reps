@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 
-export default function SetRow({ set, onDelete = () => { } }) {
+export default function SetRow({ set, onDelete = () => {}, onEdit = () => {} }) {
   const startX = useRef(0);
   const [offset, setOffset] = useState(0);
   const [showDelete, setShowDelete] = useState(false);
@@ -81,9 +81,21 @@ export default function SetRow({ set, onDelete = () => { } }) {
             </div>
           )}
         </div>
-        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-app-success/15 text-sm text-app-success">
-          ✓
-        </span>
+        <div className="flex items-center gap-2">
+          <button
+            className="text-xs font-semibold text-app-primary"
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onEdit(set);
+            }}
+          >
+            编辑
+          </button>
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-app-success/15 text-sm text-app-success">
+            ✓
+          </span>
+        </div>
       </div>
       {showDelete && (
         <button

@@ -4,6 +4,7 @@ import BodyPartSelector from "../components/BodyPartSelector.jsx";
 import BottomSheet from "../components/BottomSheet.jsx";
 import DropSetInput from "../components/DropSetInput.jsx";
 import ExercisePicker from "../components/ExercisePicker.jsx";
+import Modal from "../components/Modal.jsx";
 import PRCelebrationModal from "../components/PRCelebrationModal.jsx";
 import RepsPicker from "../components/RepsPicker.jsx";
 import RestTimer from "../components/RestTimer.jsx";
@@ -40,6 +41,23 @@ function groupSets(sets) {
   return Array.from(groups.values());
 }
 
+const WEIGHT_MIN = 5;
+const WEIGHT_MAX = 50;
+const REPS_MIN = 5;
+const REPS_MAX = 30;
+
+function clampValue(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function clampWeight(value) {
+  return clampValue(Number(value ?? WEIGHT_MIN), WEIGHT_MIN, WEIGHT_MAX);
+}
+
+function clampReps(value) {
+  return clampValue(Number(value ?? REPS_MIN), REPS_MIN, REPS_MAX);
+}
+
 export default function Today() {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
@@ -58,6 +76,12 @@ export default function Today() {
   const [showSummary, setShowSummary] = useState(false);
   const [yesterdayStats, setYesterdayStats] = useState(undefined);
   const [sessionPRs, setSessionPRs] = useState([]);
+  const [editingSet, setEditingSet] = useState(null);
+  const [editWeight, setEditWeight] = useState(WEIGHT_MIN);
+  const [editReps, setEditReps] = useState(REPS_MIN);
+  const [editSegments, setEditSegments] = useState([]);
+  const [editError, setEditError] = useState("");
+  const [editLoading, setEditLoading] = useState(false);
   const deleteTimersRef = useRef(new Map());
 
   const {
@@ -71,6 +95,7 @@ export default function Today() {
     sets,
     addSet,
     deleteSet,
+    updateSet,
     removeLocalSet,
     restoreLocalSet,
     getExerciseHistory,
@@ -125,16 +150,21 @@ export default function Today() {
     }
     const latest = exerciseHistory[0];
     if (latest.set_type === "normal") {
-      setWeight(latest.weight ?? 20);
-      setReps(latest.reps ?? 8);
+      setWeight(clampWeight(latest.weight ?? 20));
+      setReps(clampReps(latest.reps ?? 8));
     } else if (latest.segments?.length) {
-      setSegments(latest.segments);
+      setSegments(
+        latest.segments.map((segment) => ({
+          weight: clampWeight(segment.weight),
+          reps: clampReps(segment.reps)
+        }))
+      );
     }
   }, [currentExercise, exerciseHistory]);
 
   useEffect(() => {
     if (setType === "drop_set" && segments.length === 0) {
-      setSegments([{ weight, reps }]);
+      setSegments([{ weight: clampWeight(weight), reps: clampReps(reps) }]);
     }
   }, [reps, setType, segments.length, weight]);
 
@@ -193,14 +223,27 @@ export default function Today() {
     if (!currentExercise || workoutLoading) {
       return;
     }
+    const startRestTimer = () => {
+      setIsResting(true);
+      setRestKey(Date.now());
+    };
     if (setType === "normal") {
-      if (reps <= 0 || weight < 0) {
+      const safeWeight = clampWeight(weight);
+      const safeReps = clampReps(reps);
+      if (safeWeight !== weight) {
+        setWeight(safeWeight);
+      }
+      if (safeReps !== reps) {
+        setReps(safeReps);
+      }
+      if (safeReps < REPS_MIN || safeWeight < WEIGHT_MIN) {
         return;
       }
+      startRestTimer();
       const result = await addSet(currentExercise, {
         set_type: "normal",
-        weight,
-        reps
+        weight: safeWeight,
+        reps: safeReps
       });
       if (!result) {
         return;
@@ -216,20 +259,110 @@ export default function Today() {
         setSessionPRs((prev) => [pr, ...prev]);
       }
     } else {
-      if (segments.length === 0) {
+      const normalizedSegments = segments
+        .map((segment) => ({
+          weight: clampWeight(segment.weight),
+          reps: clampReps(segment.reps)
+        }))
+        .filter((segment) => Number.isFinite(segment.weight) && Number.isFinite(segment.reps));
+      if (normalizedSegments.length === 0) {
         return;
       }
+      setSegments(normalizedSegments);
+      startRestTimer();
       const result = await addSet(currentExercise, {
         set_type: "drop_set",
-        segments
+        segments: normalizedSegments
       });
       if (!result) {
         return;
       }
       setShowComplete(true);
     }
-    setIsResting(true);
-    setRestKey(Date.now());
+  };
+
+  const handleEditOpen = (set) => {
+    setEditError("");
+    setEditLoading(false);
+    setEditingSet(set);
+    if (set.set_type === "drop_set") {
+      const nextSegments = (set.segments ?? []).map((segment) => ({
+        weight: clampWeight(segment.weight),
+        reps: clampReps(segment.reps)
+      }));
+      setEditSegments(nextSegments);
+      const lastSegment = nextSegments[nextSegments.length - 1];
+      if (lastSegment) {
+        setEditWeight(lastSegment.weight);
+        setEditReps(lastSegment.reps);
+      } else {
+        setEditWeight(WEIGHT_MIN);
+        setEditReps(REPS_MIN);
+      }
+      return;
+    }
+    setEditWeight(clampWeight(set.weight));
+    setEditReps(clampReps(set.reps));
+  };
+
+  const handleEditClose = () => {
+    setEditingSet(null);
+    setEditError("");
+  };
+
+  const handleEditSave = async () => {
+    if (!editingSet || editLoading) {
+      return;
+    }
+
+    setEditLoading(true);
+    setEditError("");
+
+    if (editingSet.set_type === "drop_set") {
+      const normalizedSegments = (editSegments ?? [])
+        .map((segment) => ({
+          weight: clampWeight(segment.weight),
+          reps: clampReps(segment.reps)
+        }))
+        .filter((segment) => Number.isFinite(segment.weight) && Number.isFinite(segment.reps));
+
+      if (normalizedSegments.length === 0) {
+        setEditError("递减组至少保留一档");
+        setEditLoading(false);
+        return;
+      }
+
+      setEditSegments(normalizedSegments);
+      const updated = await updateSet(editingSet.id, {
+        set_type: "drop_set",
+        segments: normalizedSegments
+      });
+
+      if (!updated) {
+        setEditError("更新失败，请稍后重试");
+        setEditLoading(false);
+        return;
+      }
+    } else {
+      const safeWeight = clampWeight(editWeight);
+      const safeReps = clampReps(editReps);
+      setEditWeight(safeWeight);
+      setEditReps(safeReps);
+      const updated = await updateSet(editingSet.id, {
+        set_type: "normal",
+        weight: safeWeight,
+        reps: safeReps
+      });
+
+      if (!updated) {
+        setEditError("更新失败，请稍后重试");
+        setEditLoading(false);
+        return;
+      }
+    }
+
+    setEditLoading(false);
+    setEditingSet(null);
   };
 
   const lastRecord = exerciseHistory[0];
@@ -363,8 +496,13 @@ export default function Today() {
           </button>
 
           <div className="grid gap-3 md:grid-cols-2">
-            <WeightPicker value={weight} onChange={setWeight} />
-            <RepsPicker value={reps} onChange={setReps} />
+            <WeightPicker
+              value={weight}
+              min={WEIGHT_MIN}
+              max={WEIGHT_MAX}
+              onChange={setWeight}
+            />
+            <RepsPicker value={reps} min={REPS_MIN} max={REPS_MAX} onChange={setReps} />
           </div>
 
           <div className="flex gap-2">
@@ -393,7 +531,10 @@ export default function Today() {
             <DropSetInput
               segments={segments}
               onAddSegment={() =>
-                setSegments((prev) => [...prev, { weight, reps }])
+                setSegments((prev) => [
+                  ...prev,
+                  { weight: clampWeight(weight), reps: clampReps(reps) }
+                ])
               }
               onRemoveSegment={(index) =>
                 setSegments((prev) => prev.filter((_, itemIndex) => itemIndex !== index))
@@ -401,7 +542,13 @@ export default function Today() {
               onUpdateSegment={(index, field, value) =>
                 setSegments((prev) =>
                   prev.map((segment, itemIndex) =>
-                    itemIndex === index ? { ...segment, [field]: value } : segment
+                    itemIndex === index
+                      ? {
+                        ...segment,
+                        [field]:
+                          field === "weight" ? clampWeight(value) : clampReps(value)
+                      }
+                      : segment
                   )
                 )
               }
@@ -449,7 +596,12 @@ export default function Today() {
               </div>
               <div className="space-y-2">
                 {group.sets.map((set) => (
-                  <SetRow key={set.id} set={set} onDelete={handleDeleteSet} />
+                  <SetRow
+                    key={set.id}
+                    set={set}
+                    onDelete={handleDeleteSet}
+                    onEdit={handleEditOpen}
+                  />
                 ))}
               </div>
             </div>
@@ -534,6 +686,83 @@ export default function Today() {
       />
 
       <UndoToast toast={toast} onUndo={handleUndo} />
+
+      <Modal isOpen={Boolean(editingSet)} onClose={handleEditClose}>
+        <div className="space-y-4">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-[0.15em] text-app-muted">
+                编辑记录
+              </p>
+              <h3 className="text-lg font-bold text-app-text">
+                {editingSet?.exercise_name ?? "当前动作"}
+              </h3>
+              <p className="text-xs text-app-muted">第 {editingSet?.set_number} 组</p>
+            </div>
+            <button
+              className="rounded-full border border-app-divider px-3 py-1 text-xs font-semibold text-app-muted"
+              type="button"
+              onClick={handleEditClose}
+            >
+              取消
+            </button>
+          </div>
+
+          {editingSet?.set_type === "drop_set" ? (
+            <DropSetInput
+              segments={editSegments}
+              onAddSegment={() =>
+                setEditSegments((prev) => [
+                  ...prev,
+                  { weight: clampWeight(editWeight), reps: clampReps(editReps) }
+                ])
+              }
+              onRemoveSegment={(index) =>
+                setEditSegments((prev) => prev.filter((_, itemIndex) => itemIndex !== index))
+              }
+              onUpdateSegment={(index, field, value) =>
+                setEditSegments((prev) =>
+                  prev.map((segment, itemIndex) =>
+                    itemIndex === index
+                      ? {
+                        ...segment,
+                        [field]:
+                          field === "weight" ? clampWeight(value) : clampReps(value)
+                      }
+                      : segment
+                  )
+                )
+              }
+            />
+          ) : (
+            <div className="grid gap-3 md:grid-cols-2">
+              <WeightPicker
+                value={editWeight}
+                min={WEIGHT_MIN}
+                max={WEIGHT_MAX}
+                onChange={setEditWeight}
+              />
+              <RepsPicker
+                value={editReps}
+                min={REPS_MIN}
+                max={REPS_MAX}
+                onChange={setEditReps}
+              />
+            </div>
+          )}
+
+          {editError && <p className="text-sm text-red-500">{editError}</p>}
+
+          <button
+            className="btn-primary w-full rounded-button px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+            type="button"
+            disabled={editLoading}
+            onClick={handleEditSave}
+          >
+            {editLoading ? "保存中..." : "保存修改"}
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }

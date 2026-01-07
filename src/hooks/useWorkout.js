@@ -147,6 +147,45 @@ export function useWorkout() {
     return true;
   };
 
+  const updateSet = async (setId, updates) => {
+    if (!setId) {
+      return null;
+    }
+
+    const payload = {
+      set_type: updates.set_type ?? "normal",
+      weight: updates.weight ?? null,
+      reps: updates.reps ?? null,
+      segments: updates.segments ?? null
+    };
+
+    if (payload.set_type === "normal") {
+      payload.segments = null;
+    } else {
+      payload.weight = null;
+      payload.reps = null;
+    }
+
+    const { data, error: updateError } = await supabase
+      .from("workout_sets")
+      .update(payload)
+      .eq("id", setId)
+      .select(
+        "id,exercise_id,set_number,set_type,weight,reps,segments,created_at,exercises(name,body_part)"
+      )
+      .single();
+
+    if (updateError) {
+      setError(updateError.message);
+      return null;
+    }
+
+    setError("");
+    const normalizedSet = normalizeSets([data])[0];
+    setSets((prev) => prev.map((set) => (set.id === setId ? normalizedSet : set)));
+    return normalizedSet;
+  };
+
   const removeLocalSet = (setId) => {
     setSets((prev) => prev.filter((set) => set.id !== setId));
   };
@@ -195,6 +234,7 @@ export function useWorkout() {
     error,
     addSet,
     deleteSet,
+    updateSet,
     removeLocalSet,
     restoreLocalSet,
     getExerciseHistory

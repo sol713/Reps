@@ -30,7 +30,9 @@ export default function DropSetInput({
             <div className="flex flex-1 items-center gap-2">
               <input
                 className="w-20 rounded-input border border-app-divider bg-white px-3 py-1.5 text-center text-sm font-bold text-app-text shadow-sm transition-all focus:border-app-primary focus:outline-none focus:ring-2 focus:ring-app-primary/20"
-                min="0"
+                min="5"
+                max="50"
+                step="2.5"
                 type="number"
                 value={segment.weight}
                 onChange={(event) =>
@@ -41,7 +43,8 @@ export default function DropSetInput({
               <span className="text-lg text-app-muted">×</span>
               <input
                 className="w-16 rounded-input border border-app-divider bg-white px-3 py-1.5 text-center text-sm font-bold text-app-text shadow-sm transition-all focus:border-app-primary focus:outline-none focus:ring-2 focus:ring-app-primary/20"
-                min="0"
+                min="5"
+                max="30"
                 type="number"
                 value={segment.reps}
                 onChange={(event) =>

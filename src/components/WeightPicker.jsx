@@ -1,17 +1,22 @@
+import { hapticTick } from "../lib/haptics.js";
+
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
 export default function WeightPicker({
   value = 0,
-  onChange = () => { },
+  onChange = () => {},
   unit = "kg",
   step = 2.5,
-  min = 0,
-  max = 200
+  min = 5,
+  max = 50
 }) {
   const handleAdjust = (nextValue) => {
     const adjusted = clamp(Number(nextValue.toFixed(2)), min, max);
+    if (adjusted !== value) {
+      hapticTick();
+    }
     onChange(adjusted);
   };
 
