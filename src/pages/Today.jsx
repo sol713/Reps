@@ -418,6 +418,12 @@ export default function Today() {
           </Link>
           <Link
             className="rounded-full border border-app-divider bg-white px-3 py-1.5 text-xs font-semibold text-app-muted shadow-sm transition-all hover:border-app-muted hover:bg-gray-50 active:scale-95 neo-surface-soft neo-pressable"
+            to="/stats"
+          >
+            统计
+          </Link>
+          <Link
+            className="rounded-full border border-app-divider bg-white px-3 py-1.5 text-xs font-semibold text-app-muted shadow-sm transition-all hover:border-app-muted hover:bg-gray-50 active:scale-95 neo-surface-soft neo-pressable"
             to="/exercises"
           >
             动作库

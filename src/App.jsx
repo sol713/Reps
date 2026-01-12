@@ -6,6 +6,7 @@ import Exercises from "./pages/Exercises.jsx";
 import History from "./pages/History.jsx";
 import HistoryDetail from "./pages/HistoryDetail.jsx";
 import Login from "./pages/Login.jsx";
+import Stats from "./pages/Stats.jsx";
 import Today from "./pages/Today.jsx";
 
 function AppRoutes() {
@@ -25,6 +26,7 @@ function AppRoutes() {
           />
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Today />} />
+            <Route path="/stats" element={<Stats />} />
             <Route path="/history" element={<History />} />
             <Route path="/history/:date" element={<HistoryDetail />} />
             <Route path="/exercises" element={<Exercises />} />
