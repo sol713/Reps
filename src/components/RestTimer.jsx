@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { formatDuration } from "../lib/date.js";
 import { hapticFeedback } from "../lib/haptics.js";
 
@@ -9,8 +9,16 @@ export default function RestTimer({
 }) {
   const [remaining, setRemaining] = useState(duration);
   const [isPaused, setIsPaused] = useState(false);
+  
+  const endTimeRef = useRef(Date.now() + duration * 1000);
+  const onCompleteRef = useRef(onComplete);
+  const onSkipRef = useRef(onSkip);
+  
+  onCompleteRef.current = onComplete;
+  onSkipRef.current = onSkip;
 
   useEffect(() => {
+    endTimeRef.current = Date.now() + duration * 1000;
     setRemaining(duration);
     setIsPaused(false);
   }, [duration]);
@@ -20,19 +28,51 @@ export default function RestTimer({
       return undefined;
     }
 
-    const timer = setInterval(() => {
-      setRemaining((prev) => {
-        if (prev <= 1) {
-          hapticFeedback("timerEnd");
-          onComplete();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+    const tick = () => {
+      const now = Date.now();
+      const msLeft = endTimeRef.current - now;
+      const secondsLeft = Math.ceil(msLeft / 1000);
 
-    return () => clearInterval(timer);
-  }, [isPaused, onComplete, remaining]);
+      if (secondsLeft <= 0) {
+        setRemaining(0);
+        hapticFeedback("timerEnd");
+        onCompleteRef.current();
+        return;
+      }
+
+      setRemaining(secondsLeft);
+    };
+
+    tick();
+    const timer = setInterval(tick, 250);
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        tick();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
+  }, [isPaused, remaining <= 0]);
+
+  const handlePause = useCallback(() => {
+    setIsPaused((prev) => {
+      if (prev) {
+        endTimeRef.current = Date.now() + remaining * 1000;
+      }
+      return !prev;
+    });
+  }, [remaining]);
+
+  const handleSkip = useCallback(() => {
+    setIsPaused(true);
+    setRemaining(0);
+    onSkipRef.current();
+  }, []);
 
   const progress = ((duration - remaining) / duration) * 100;
   const isWarning = remaining <= 10 && remaining > 0;
@@ -58,18 +98,14 @@ export default function RestTimer({
           <button
             className="btn btn-secondary text-sm"
             type="button"
-            onClick={() => setIsPaused((prev) => !prev)}
+            onClick={handlePause}
           >
             {isPaused ? "继续" : "暂停"}
           </button>
           <button
             className="btn btn-primary text-sm"
             type="button"
-            onClick={() => {
-              setIsPaused(true);
-              setRemaining(0);
-              onSkip();
-            }}
+            onClick={handleSkip}
           >
             跳过
           </button>
