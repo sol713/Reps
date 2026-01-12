@@ -146,7 +146,7 @@ export default function HistoryDetail() {
         <span className="text-xs font-semibold text-app-muted">详情</span>
       </header>
 
-      <section className="grid gap-3 rounded-card border border-app-divider bg-app-card p-4">
+      <section className="grid gap-3 rounded-card border border-app-divider bg-app-card p-4 neo-surface-soft">
         <div>
           <p className="text-xs text-app-muted">训练部位</p>
           <p className="text-sm font-semibold">
@@ -154,11 +154,11 @@ export default function HistoryDetail() {
           </p>
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-input border border-app-divider px-3 py-2 text-center">
+          <div className="rounded-input border border-app-divider px-3 py-2 text-center neo-inset">
             <p className="text-xs text-app-muted">动作数</p>
             <p className="text-base font-semibold">{exerciseGroups.length}</p>
           </div>
-          <div className="rounded-input border border-app-divider px-3 py-2 text-center">
+          <div className="rounded-input border border-app-divider px-3 py-2 text-center neo-inset">
             <p className="text-xs text-app-muted">总组数</p>
             <p className="text-base font-semibold">{sets.length}</p>
           </div>
@@ -171,7 +171,7 @@ export default function HistoryDetail() {
         ) : (
           exerciseGroups.map((group) => (
             <div
-              className="rounded-card border border-app-divider bg-app-card p-4"
+              className="rounded-card border border-app-divider bg-app-card p-4 neo-surface-soft"
               key={group.exerciseId}
             >
               <div className="flex items-center justify-between">
@@ -189,7 +189,7 @@ export default function HistoryDetail() {
               <div className="mt-3 space-y-2">
                 {group.sets.map((set) => (
                   <div
-                    className="rounded-input border border-app-divider px-3 py-2"
+                    className="rounded-input border border-app-divider px-3 py-2 neo-inset"
                     key={set.id}
                   >
                     <p className="text-xs text-app-muted">第 {set.set_number} 组</p>

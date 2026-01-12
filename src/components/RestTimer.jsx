@@ -37,7 +37,7 @@ export default function RestTimer({
   const progress = ((duration - remaining) / duration) * 100;
 
   return (
-    <div className="glass rounded-card border border-white/20 p-4 shadow-floating">
+    <div className="glass rounded-card border border-white/20 p-4 shadow-floating neo-surface-soft">
       <div className="h-2 w-full overflow-hidden rounded-full bg-app-divider/50">
         <div
           className="progress-bar h-full transition-all duration-300"
@@ -55,14 +55,14 @@ export default function RestTimer({
         </div>
         <div className="flex items-center gap-3">
           <button
-            className="rounded-button border border-app-divider bg-white px-4 py-2 text-xs font-semibold uppercase tracking-wider text-app-muted shadow-sm transition-all duration-150 hover:border-app-muted hover:bg-gray-50 active:scale-95"
+            className="rounded-button border border-app-divider bg-white px-4 py-2 text-xs font-semibold uppercase tracking-wider text-app-muted shadow-sm transition-all duration-150 hover:border-app-muted hover:bg-gray-50 active:scale-95 neo-surface-soft neo-pressable"
             type="button"
             onClick={() => setIsPaused((prev) => !prev)}
           >
             {isPaused ? "继续" : "暂停"}
           </button>
           <button
-            className="btn-primary rounded-button px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white"
+            className="btn-primary rounded-button px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white neo-pressable"
             type="button"
             onClick={() => {
               setIsPaused(true);

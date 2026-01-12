@@ -50,7 +50,7 @@ export default function Exercises() {
         </Link>
         <h1 className="text-lg font-semibold">动作库</h1>
         <button
-          className="rounded-full border border-app-divider px-3 py-1 text-xs font-semibold text-app-muted"
+          className="rounded-full border border-app-divider bg-white px-3 py-1 text-xs font-semibold text-app-muted neo-surface-soft neo-pressable"
           type="button"
           onClick={() => setShowAddModal(true)}
         >
@@ -66,7 +66,7 @@ export default function Exercises() {
           const isActive = activeTab === tab.key;
           return (
             <button
-              className={`rounded-full border px-4 py-2 text-xs font-semibold ${
+              className={`rounded-full border px-4 py-2 text-xs font-semibold neo-pressable ${
                 isActive
                   ? "border-app-primary bg-app-primary text-white"
                   : "border-app-divider bg-app-card text-app-muted"
@@ -83,17 +83,17 @@ export default function Exercises() {
 
       <div className="space-y-4">
         {loading && (
-          <div className="rounded-card border border-dashed border-app-divider bg-gray-50 py-6 text-center">
+          <div className="rounded-card border border-dashed border-app-divider bg-gray-50 py-6 text-center neo-inset">
             <p className="text-sm text-app-muted">加载中...</p>
           </div>
         )}
         {error && !loading && (
-          <div className="rounded-card border border-dashed border-app-divider bg-gray-50 py-6 text-center">
+          <div className="rounded-card border border-dashed border-app-divider bg-gray-50 py-6 text-center neo-inset">
             <p className="text-sm text-red-500">{error}</p>
           </div>
         )}
         {groupedExercises.map((part) => (
-          <div className="rounded-card border border-app-divider bg-app-card p-4" key={part.key}>
+          <div className="rounded-card border border-app-divider bg-app-card p-4 neo-surface-soft" key={part.key}>
             <div className="flex items-center justify-between">
               <p className="text-sm font-semibold">{part.label}</p>
               <span className="text-xs text-app-muted">{part.exercises.length}</span>
@@ -104,7 +104,7 @@ export default function Exercises() {
               ) : (
                 part.exercises.map((exercise) => (
                   <div
-                    className="flex items-center justify-between rounded-input border border-app-divider px-3 py-2"
+                    className="flex items-center justify-between rounded-input border border-app-divider px-3 py-2 neo-inset"
                     key={exercise.id}
                   >
                     <span className="text-sm font-semibold">{exercise.name}</span>
@@ -131,7 +131,7 @@ export default function Exercises() {
         onClose={() => setShowAddModal(false)}
       >
         <div className="space-y-4">
-          <label className="flex flex-col gap-2 rounded-input border border-app-divider bg-app-card px-3 py-2">
+          <label className="flex flex-col gap-2 rounded-input border border-app-divider bg-app-card px-3 py-2 neo-inset">
             <span className="text-xs text-app-muted">动作名称</span>
             <input
               className="bg-transparent text-sm font-semibold outline-none"
@@ -140,7 +140,7 @@ export default function Exercises() {
               onChange={(event) => setNewName(event.target.value)}
             />
           </label>
-          <label className="flex flex-col gap-2 rounded-input border border-app-divider bg-app-card px-3 py-2">
+          <label className="flex flex-col gap-2 rounded-input border border-app-divider bg-app-card px-3 py-2 neo-inset">
             <span className="text-xs text-app-muted">所属部位</span>
             <select
               className="bg-transparent text-sm font-semibold outline-none"

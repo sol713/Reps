@@ -53,13 +53,13 @@ export default function BottomSheet({ isOpen, onClose, title, children }) {
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
       >
-        <div className="glass max-h-[85vh] overflow-y-auto rounded-t-[20px] border-t border-white/30 px-4 pb-8 pt-3 shadow-floating">
+        <div className="glass max-h-[85vh] overflow-y-auto rounded-t-[20px] border-t border-white/30 px-4 pb-8 pt-3 shadow-floating neo-surface-soft">
           <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-app-divider/60" />
           {title && (
             <div className="mb-5 flex items-center justify-between">
               <h3 className="text-base font-bold text-app-text">{title}</h3>
               <button
-                className="rounded-full border border-app-divider bg-white/80 px-3 py-1.5 text-xs font-semibold text-app-muted shadow-sm transition-all duration-150 hover:bg-gray-100 active:scale-95"
+                className="rounded-full border border-app-divider bg-white/80 px-3 py-1.5 text-xs font-semibold text-app-muted shadow-sm transition-all duration-150 hover:bg-gray-100 active:scale-95 neo-surface-soft neo-pressable"
                 type="button"
                 onClick={onClose}
               >

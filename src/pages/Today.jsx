@@ -411,19 +411,19 @@ export default function Today() {
         </div>
         <div className="flex items-center gap-3">
           <Link
-            className="rounded-full border border-app-divider bg-white px-3 py-1.5 text-xs font-semibold text-app-muted shadow-sm transition-all hover:border-app-muted hover:bg-gray-50 active:scale-95"
+            className="rounded-full border border-app-divider bg-white px-3 py-1.5 text-xs font-semibold text-app-muted shadow-sm transition-all hover:border-app-muted hover:bg-gray-50 active:scale-95 neo-surface-soft neo-pressable"
             to="/history"
           >
             历史
           </Link>
           <Link
-            className="rounded-full border border-app-divider bg-white px-3 py-1.5 text-xs font-semibold text-app-muted shadow-sm transition-all hover:border-app-muted hover:bg-gray-50 active:scale-95"
+            className="rounded-full border border-app-divider bg-white px-3 py-1.5 text-xs font-semibold text-app-muted shadow-sm transition-all hover:border-app-muted hover:bg-gray-50 active:scale-95 neo-surface-soft neo-pressable"
             to="/exercises"
           >
             动作库
           </Link>
           <button
-            className="rounded-full border border-app-divider bg-white px-3 py-1.5 text-xs font-semibold text-app-muted shadow-sm transition-all hover:border-app-muted hover:bg-gray-50 active:scale-95"
+            className="rounded-full border border-app-divider bg-white px-3 py-1.5 text-xs font-semibold text-app-muted shadow-sm transition-all hover:border-app-muted hover:bg-gray-50 active:scale-95 neo-surface-soft neo-pressable"
             type="button"
             onClick={signOut}
           >
@@ -443,7 +443,7 @@ export default function Today() {
       />
 
       <button
-        className="interactive-card flex items-center justify-between rounded-card border border-app-divider bg-white px-4 py-4 text-left shadow-card"
+        className="interactive-card neo-surface-soft neo-pressable flex items-center justify-between rounded-card border border-app-divider bg-white px-4 py-4 text-left shadow-card"
         type="button"
         onClick={() => setShowExercisePicker(true)}
       >
@@ -459,7 +459,7 @@ export default function Today() {
       </button>
 
       {currentExercise && (
-        <section className="fade-in space-y-4 rounded-card border border-app-divider bg-white p-5 shadow-card">
+        <section className="fade-in space-y-4 rounded-card neo-surface-soft p-5">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-medium uppercase tracking-[0.15em] text-app-muted">
@@ -468,7 +468,7 @@ export default function Today() {
               <h2 className="text-lg font-bold text-app-text">{currentExercise.name}</h2>
             </div>
             <button
-              className="rounded-button border border-app-divider bg-white px-3 py-1.5 text-xs font-semibold text-app-muted shadow-sm transition-all hover:border-app-muted hover:bg-gray-50 active:scale-95"
+              className="rounded-button border border-app-divider bg-white px-3 py-1.5 text-xs font-semibold text-app-muted shadow-sm transition-all hover:border-app-muted hover:bg-gray-50 active:scale-95 neo-surface-soft neo-pressable"
               type="button"
               onClick={() => navigate("/history")}
             >
@@ -477,7 +477,7 @@ export default function Today() {
           </div>
 
           <button
-            className="flex w-full items-center gap-2 rounded-input border border-app-divider bg-gray-50 px-4 py-2.5 text-left text-sm text-app-muted transition-colors hover:bg-gray-100"
+            className="flex w-full items-center gap-2 rounded-input border border-app-divider bg-gray-50 px-4 py-2.5 text-left text-sm text-app-muted transition-colors hover:bg-gray-100 neo-inset"
             type="button"
             onClick={() => navigate("/history")}
           >
@@ -574,15 +574,15 @@ export default function Today() {
           </span>
         </div>
         {workoutLoading ? (
-          <div className="rounded-card border border-dashed border-app-divider bg-gray-50 py-8 text-center">
+          <div className="rounded-card border border-dashed border-app-divider bg-gray-50 neo-inset py-8 text-center">
             <p className="text-sm text-app-muted">加载中...</p>
           </div>
         ) : workoutError ? (
-          <div className="rounded-card border border-dashed border-app-divider bg-gray-50 py-8 text-center">
+          <div className="rounded-card border border-dashed border-app-divider bg-gray-50 neo-inset py-8 text-center">
             <p className="text-sm text-red-500">{workoutError}</p>
           </div>
         ) : todayGroups.length === 0 ? (
-          <div className="rounded-card border border-dashed border-app-divider bg-gray-50 py-8 text-center">
+          <div className="rounded-card border border-dashed border-app-divider bg-gray-50 neo-inset py-8 text-center">
             <p className="text-sm text-app-muted">还没有记录，开始你的第一组训练吧！</p>
           </div>
         ) : (
@@ -609,7 +609,7 @@ export default function Today() {
         )}
       </section>
 
-      <section className="stat-card rounded-card border border-app-divider p-5 shadow-card">
+      <section className="stat-card rounded-card neo-surface-soft p-5">
         <p className="text-xs font-medium uppercase tracking-[0.15em] text-app-muted">
           今日总览
         </p>

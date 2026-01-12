@@ -33,9 +33,9 @@ export default function Login() {
           <p className="mt-1 text-sm text-app-muted">记录每一组</p>
         </div>
 
-        <div className="rounded-card border border-app-divider bg-app-card p-5 shadow-sm">
+        <div className="rounded-card border border-app-divider bg-app-card p-5 shadow-sm neo-surface-soft">
           <form className="space-y-4" onSubmit={handleSubmit}>
-            <label className="flex flex-col gap-2 rounded-input border border-app-divider bg-white px-3 py-2">
+            <label className="flex flex-col gap-2 rounded-input border border-app-divider bg-white px-3 py-2 neo-inset">
               <span className="text-xs text-app-muted">邮箱</span>
               <input
                 required
@@ -47,7 +47,7 @@ export default function Login() {
               />
             </label>
 
-            <label className="flex flex-col gap-2 rounded-input border border-app-divider bg-white px-3 py-2">
+            <label className="flex flex-col gap-2 rounded-input border border-app-divider bg-white px-3 py-2 neo-inset">
               <span className="text-xs text-app-muted">密码</span>
               <input
                 required

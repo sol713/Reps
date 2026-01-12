@@ -7,6 +7,12 @@
   --gradient-primary: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
   --gradient-success: linear-gradient(135deg, #34C759 0%, #30D158 100%);
   --gradient-warm: linear-gradient(135deg, #FF9500 0%, #FF6B35 100%);
+  --neo-surface: #eef0f4;
+  --neo-card: #f8f9fb;
+  --neo-highlight: rgba(255, 255, 255, 0.7);
+  --neo-shadow: rgba(198, 204, 216, 0.6);
+  --neo-shadow-strong: rgba(180, 188, 205, 0.55);
+  --neo-border: rgba(255, 255, 255, 0.6);
 }
 
 * {
@@ -16,7 +22,7 @@
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif;
-  background-color: #f2f2f7;
+  background-color: var(--neo-surface);
   color: #1c1c1e;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -24,6 +30,35 @@ body {
 
 #root {
   min-height: 100vh;
+}
+
+/* ========== Neumorphism Base ========== */
+
+.neo-surface {
+  background: var(--neo-card);
+  border: 1px solid var(--neo-border);
+  box-shadow: 10px 10px 22px var(--neo-shadow-strong), -10px -10px 22px var(--neo-highlight);
+}
+
+.neo-surface-soft {
+  background: var(--neo-card);
+  border: 1px solid var(--neo-border);
+  box-shadow: 8px 8px 18px var(--neo-shadow), -8px -8px 18px var(--neo-highlight);
+}
+
+.neo-inset {
+  background: var(--neo-card);
+  border: 1px solid var(--neo-border);
+  box-shadow: inset 6px 6px 12px var(--neo-shadow), inset -6px -6px 12px rgba(255, 255, 255, 0.8);
+}
+
+.neo-pressable {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.neo-pressable:active {
+  transform: translateY(1px);
+  box-shadow: 6px 6px 14px var(--neo-shadow), -6px -6px 14px var(--neo-highlight);
 }
 
 /* ========== Button Utilities ========== */

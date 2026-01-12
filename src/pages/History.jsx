@@ -85,7 +85,7 @@ export default function History() {
     <div className="mx-auto flex min-h-screen max-w-xl flex-col gap-6 px-4 pb-16 pt-6">
       <header className="flex items-center gap-4">
         <Link
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-app-divider bg-white text-app-muted shadow-sm transition-all hover:bg-gray-50 active:scale-95"
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-app-divider bg-white text-app-muted shadow-sm transition-all hover:bg-gray-50 active:scale-95 neo-surface-soft neo-pressable"
           to="/"
         >
           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -100,11 +100,11 @@ export default function History() {
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-app-primary border-t-transparent"></div>
         </div>
       ) : error ? (
-        <div className="rounded-card border border-dashed border-app-divider bg-gray-50 p-6 text-center">
+        <div className="rounded-card border border-dashed border-app-divider bg-gray-50 neo-inset p-6 text-center">
           <p className="text-sm text-red-500">{error}</p>
         </div>
       ) : workoutLogs.length === 0 ? (
-        <div className="rounded-card border border-dashed border-app-divider bg-gray-50 p-8 text-center">
+        <div className="rounded-card border border-dashed border-app-divider bg-gray-50 neo-inset p-8 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-app-primary/10">
             <svg className="h-8 w-8 text-app-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -127,7 +127,7 @@ export default function History() {
             const summary = buildSummary(log);
             return (
               <button
-                className="fade-in interactive-card flex w-full items-center justify-between rounded-card border border-app-divider bg-white p-4 text-left shadow-card"
+                className="fade-in interactive-card neo-surface-soft neo-pressable flex w-full items-center justify-between rounded-card border border-app-divider bg-white p-4 text-left shadow-card"
                 key={log.id}
                 type="button"
                 style={{ animationDelay: `${index * 50}ms` }}
