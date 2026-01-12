@@ -27,7 +27,6 @@ export default function ExercisePicker({
     <div className="space-y-5">
       <div className="relative">
         <input
-          autoFocus
           className="input pl-10"
           placeholder="搜索动作..."
           value={searchQuery}
