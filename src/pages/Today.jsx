@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import BodyPartSelector from "../components/BodyPartSelector.jsx";
 import BottomSheet from "../components/BottomSheet.jsx";
 import DropSetInput from "../components/DropSetInput.jsx";
@@ -60,6 +60,7 @@ function clampReps(value) {
 
 export default function Today() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [currentBodyPart, setCurrentBodyPart] = useState("chest");
   const [currentExercise, setCurrentExercise] = useState(null);
@@ -70,6 +71,7 @@ export default function Today() {
   const [segments, setSegments] = useState([{ weight: 20, reps: 8 }]);
   const [isResting, setIsResting] = useState(false);
   const [restKey, setRestKey] = useState(0);
+  const [restDuration, setRestDuration] = useState(60);
   const [exerciseHistory, setExerciseHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [showComplete, setShowComplete] = useState(false);
@@ -82,6 +84,8 @@ export default function Today() {
   const [editSegments, setEditSegments] = useState([]);
   const [editError, setEditError] = useState("");
   const [editLoading, setEditLoading] = useState(false);
+  const [activeTemplate, setActiveTemplate] = useState(null);
+  const [templateExerciseIndex, setTemplateExerciseIndex] = useState(0);
   const deleteTimersRef = useRef(new Map());
 
   const {
@@ -92,6 +96,7 @@ export default function Today() {
     error: exercisesError
   } = useExercises();
   const {
+    todayLog,
     sets,
     addSet,
     deleteSet,
@@ -99,12 +104,42 @@ export default function Today() {
     removeLocalSet,
     restoreLocalSet,
     getExerciseHistory,
+    startWorkout,
+    endWorkout,
+    getWorkoutDuration,
     loading: workoutLoading,
     error: workoutError
   } = useWorkout();
   const { streak } = useStreak(sets.length);
   const { newPR, checkForPR, clearPR } = usePRDetector();
   const { toast, showUndo, handleUndo } = useUndoToast();
+
+  useEffect(() => {
+    const template = location.state?.template;
+    if (template && !activeTemplate) {
+      setActiveTemplate(template);
+      setTemplateExerciseIndex(0);
+      startWorkout(template.id);
+      
+      if (template.exercises?.length > 0) {
+        const firstEx = template.exercises[0];
+        setCurrentExercise({
+          id: firstEx.exerciseId,
+          name: firstEx.exerciseName,
+          body_part: firstEx.bodyPart
+        });
+        if (firstEx.targetWeight) {
+          setWeight(clampWeight(firstEx.targetWeight));
+        }
+        setReps(clampReps(firstEx.targetRepsMin ?? 8));
+        if (firstEx.restSeconds) {
+          setRestDuration(firstEx.restSeconds);
+        }
+      }
+      
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, activeTemplate, startWorkout, navigate, location.pathname]);
 
   const today = getTodayIsoDate();
   const todayGroups = useMemo(() => groupSets(sets), [sets]);
@@ -243,7 +278,8 @@ export default function Today() {
       const result = await addSet(currentExercise, {
         set_type: "normal",
         weight: safeWeight,
-        reps: safeReps
+        reps: safeReps,
+        rest_seconds: restDuration
       });
       if (!result) {
         return;
@@ -272,13 +308,45 @@ export default function Today() {
       startRestTimer();
       const result = await addSet(currentExercise, {
         set_type: "drop_set",
-        segments: normalizedSegments
+        segments: normalizedSegments,
+        rest_seconds: restDuration
       });
       if (!result) {
         return;
       }
       setShowComplete(true);
     }
+  };
+
+  const handleNextTemplateExercise = () => {
+    if (!activeTemplate?.exercises) return;
+    
+    const nextIndex = templateExerciseIndex + 1;
+    if (nextIndex >= activeTemplate.exercises.length) {
+      setActiveTemplate(null);
+      return;
+    }
+    
+    const nextEx = activeTemplate.exercises[nextIndex];
+    setTemplateExerciseIndex(nextIndex);
+    setCurrentExercise({
+      id: nextEx.exerciseId,
+      name: nextEx.exerciseName,
+      body_part: nextEx.bodyPart
+    });
+    if (nextEx.targetWeight) {
+      setWeight(clampWeight(nextEx.targetWeight));
+    }
+    setReps(clampReps(nextEx.targetRepsMin ?? 8));
+    if (nextEx.restSeconds) {
+      setRestDuration(nextEx.restSeconds);
+    }
+  };
+
+  const handleFinishWorkout = async () => {
+    await endWorkout();
+    setShowSummary(true);
+    setActiveTemplate(null);
   };
 
   const handleEditOpen = (set) => {
@@ -403,12 +471,34 @@ export default function Today() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">
-              今日训练
+              {activeTemplate ? activeTemplate.name : "今日训练"}
             </p>
             <h1 className="text-2xl font-bold text-text-primary">{formatDate(today)}</h1>
+            {todayLog?.startedAt && (
+              <p className="text-sm text-text-secondary">
+                已训练 {getWorkoutDuration() ?? 0} 分钟
+              </p>
+            )}
           </div>
           <StreakBadge streak={streak} />
         </div>
+        {activeTemplate && (
+          <div className="mt-3 flex items-center gap-2">
+            <div
+              className="h-2 flex-1 overflow-hidden rounded-full bg-bg-tertiary"
+            >
+              <div
+                className="h-full rounded-full bg-primary transition-all"
+                style={{
+                  width: `${((templateExerciseIndex + 1) / activeTemplate.exercises.length) * 100}%`
+                }}
+              />
+            </div>
+            <span className="text-xs text-text-secondary">
+              {templateExerciseIndex + 1}/{activeTemplate.exercises.length}
+            </span>
+          </div>
+        )}
       </header>
 
       <BodyPartSelector
@@ -526,6 +616,15 @@ export default function Today() {
           >
             记录本组 ✓
           </button>
+          {activeTemplate && templateExerciseIndex < activeTemplate.exercises.length - 1 && (
+            <button
+              className="btn btn-secondary w-full text-base"
+              type="button"
+              onClick={handleNextTemplateExercise}
+            >
+              下一动作 →
+            </button>
+          )}
         </section>
       )}
 
@@ -594,7 +693,7 @@ export default function Today() {
         <button
           className="btn btn-primary w-full"
           type="button"
-          onClick={() => setShowSummary(true)}
+          onClick={handleFinishWorkout}
         >
           训练完成
         </button>
@@ -604,7 +703,7 @@ export default function Today() {
         <div className="fixed inset-x-0 bottom-[calc(56px+env(safe-area-inset-bottom)+16px)] z-40 px-4">
           <RestTimer
             key={restKey}
-            duration={60}
+            duration={restDuration}
             onComplete={() => setIsResting(false)}
             onSkip={() => setIsResting(false)}
           />

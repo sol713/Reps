@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getTodayIsoDate } from "../lib/date.js";
 import { normalizeSets } from "../lib/sets.js";
 import { supabase } from "../lib/supabase.js";
 import { useAuth } from "./useAuth.jsx";
 
 const LOG_SELECT =
-  "id,date,workout_sets(id,exercise_id,set_number,set_type,weight,reps,segments,created_at,exercises(name,body_part))";
+  "id,date,template_id,started_at,ended_at,notes,workout_sets(id,exercise_id,set_number,set_type,weight,reps,segments,rest_seconds,rpe,notes,created_at,exercises(name,body_part))";
 
 export function useWorkout() {
   const { user } = useAuth();
@@ -47,7 +47,14 @@ export function useWorkout() {
 
       if (data) {
         const normalizedSets = normalizeSets(data.workout_sets ?? []);
-        setTodayLog({ id: data.id, date: data.date });
+        setTodayLog({
+          id: data.id,
+          date: data.date,
+          templateId: data.template_id,
+          startedAt: data.started_at,
+          endedAt: data.ended_at,
+          notes: data.notes
+        });
         setSets(normalizedSets);
         setLoading(false);
         return;
@@ -56,7 +63,7 @@ export function useWorkout() {
       const { data: created, error: createError } = await supabase
         .from("workout_logs")
         .insert({ date: today, user_id: user.id })
-        .select("id,date")
+        .select("id,date,template_id,started_at,ended_at,notes")
         .single();
 
       if (!isActive) {
@@ -69,7 +76,14 @@ export function useWorkout() {
         return;
       }
 
-      setTodayLog({ id: created.id, date: created.date });
+      setTodayLog({
+        id: created.id,
+        date: created.date,
+        templateId: created.template_id,
+        startedAt: created.started_at,
+        endedAt: created.ended_at,
+        notes: created.notes
+      });
       setSets([]);
       setLoading(false);
     };
@@ -81,9 +95,63 @@ export function useWorkout() {
     };
   }, [user]);
 
+  const startWorkout = useCallback(async (templateId = null) => {
+    if (!todayLog) return false;
+
+    const now = new Date().toISOString();
+    const { error: updateError } = await supabase
+      .from("workout_logs")
+      .update({
+        started_at: todayLog.startedAt ?? now,
+        template_id: templateId
+      })
+      .eq("id", todayLog.id);
+
+    if (updateError) {
+      setError(updateError.message);
+      return false;
+    }
+
+    setTodayLog((prev) => ({
+      ...prev,
+      startedAt: prev.startedAt ?? now,
+      templateId
+    }));
+    return true;
+  }, [todayLog]);
+
+  const endWorkout = useCallback(async (notes = "") => {
+    if (!todayLog) return false;
+
+    const now = new Date().toISOString();
+    const { error: updateError } = await supabase
+      .from("workout_logs")
+      .update({
+        ended_at: now,
+        notes
+      })
+      .eq("id", todayLog.id);
+
+    if (updateError) {
+      setError(updateError.message);
+      return false;
+    }
+
+    setTodayLog((prev) => ({
+      ...prev,
+      endedAt: now,
+      notes
+    }));
+    return true;
+  }, [todayLog]);
+
   const addSet = async (exercise, setData) => {
     if (!exercise || !todayLog) {
       return null;
+    }
+
+    if (!todayLog.startedAt) {
+      await startWorkout();
     }
 
     const { data: maxData, error: maxError } = await supabase
@@ -109,14 +177,17 @@ export function useWorkout() {
       set_type: setData.set_type ?? "normal",
       weight: setData.weight ?? null,
       reps: setData.reps ?? null,
-      segments: setData.segments ?? null
+      segments: setData.segments ?? null,
+      rest_seconds: setData.rest_seconds ?? null,
+      rpe: setData.rpe ?? null,
+      notes: setData.notes ?? null
     };
 
     const { data, error: insertError } = await supabase
       .from("workout_sets")
       .insert(payload)
       .select(
-        "id,exercise_id,set_number,set_type,weight,reps,segments,created_at,exercises(name,body_part)"
+        "id,exercise_id,set_number,set_type,weight,reps,segments,rest_seconds,rpe,notes,created_at,exercises(name,body_part)"
       )
       .single();
 
@@ -156,7 +227,10 @@ export function useWorkout() {
       set_type: updates.set_type ?? "normal",
       weight: updates.weight ?? null,
       reps: updates.reps ?? null,
-      segments: updates.segments ?? null
+      segments: updates.segments ?? null,
+      rest_seconds: updates.rest_seconds ?? null,
+      rpe: updates.rpe ?? null,
+      notes: updates.notes ?? null
     };
 
     if (payload.set_type === "normal") {
@@ -171,7 +245,7 @@ export function useWorkout() {
       .update(payload)
       .eq("id", setId)
       .select(
-        "id,exercise_id,set_number,set_type,weight,reps,segments,created_at,exercises(name,body_part)"
+        "id,exercise_id,set_number,set_type,weight,reps,segments,rest_seconds,rpe,notes,created_at,exercises(name,body_part)"
       )
       .single();
 
@@ -205,7 +279,7 @@ export function useWorkout() {
     });
   };
 
-  const getExerciseHistory = async (exerciseId, limit = 3) => {
+  const getExerciseHistory = useCallback(async (exerciseId, limit = 3) => {
     if (!exerciseId) {
       return [];
     }
@@ -213,7 +287,7 @@ export function useWorkout() {
     const { data, error: historyError } = await supabase
       .from("workout_sets")
       .select(
-        "id,exercise_id,set_number,set_type,weight,reps,segments,created_at,exercises(name,body_part)"
+        "id,exercise_id,set_number,set_type,weight,reps,segments,rest_seconds,rpe,notes,created_at,exercises(name,body_part)"
       )
       .eq("exercise_id", exerciseId)
       .order("created_at", { ascending: false })
@@ -225,7 +299,18 @@ export function useWorkout() {
     }
 
     return normalizeSets(data ?? []);
-  };
+  }, []);
+
+  const getWorkoutDuration = useCallback(() => {
+    if (!todayLog?.startedAt) return null;
+    
+    const start = new Date(todayLog.startedAt);
+    const end = todayLog.endedAt ? new Date(todayLog.endedAt) : new Date();
+    const diffMs = end - start;
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    return diffMins;
+  }, [todayLog]);
 
   return {
     todayLog,
@@ -237,6 +322,9 @@ export function useWorkout() {
     updateSet,
     removeLocalSet,
     restoreLocalSet,
-    getExerciseHistory
+    getExerciseHistory,
+    startWorkout,
+    endWorkout,
+    getWorkoutDuration
   };
 }
