@@ -3,11 +3,14 @@ import LoadingScreen from "./components/LoadingScreen.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import TabBar from "./components/TabBar.jsx";
 import { AuthProvider, useAuth } from "./hooks/useAuth.jsx";
+import { SettingsProvider } from "./hooks/useSettings.jsx";
 import { ThemeProvider } from "./hooks/useTheme.jsx";
+import Achievements from "./pages/Achievements.jsx";
 import Exercises from "./pages/Exercises.jsx";
 import History from "./pages/History.jsx";
 import HistoryDetail from "./pages/HistoryDetail.jsx";
 import Login from "./pages/Login.jsx";
+import Settings from "./pages/Settings.jsx";
 import Stats from "./pages/Stats.jsx";
 import TemplateDetail from "./pages/TemplateDetail.jsx";
 import Templates from "./pages/Templates.jsx";
@@ -33,9 +36,11 @@ function AppRoutes() {
             <Route path="/templates" element={<Templates />} />
             <Route path="/templates/:id" element={<TemplateDetail />} />
             <Route path="/stats" element={<Stats />} />
+            <Route path="/achievements" element={<Achievements />} />
             <Route path="/history" element={<History />} />
             <Route path="/history/:date" element={<HistoryDetail />} />
             <Route path="/exercises" element={<Exercises />} />
+            <Route path="/settings" element={<Settings />} />
           </Route>
         </Routes>
         {isAuthenticated && <TabBar />}
@@ -47,9 +52,11 @@ function AppRoutes() {
 export default function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
+      <SettingsProvider>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </SettingsProvider>
     </ThemeProvider>
   );
 }

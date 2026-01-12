@@ -5,7 +5,10 @@ import BottomSheet from "../components/BottomSheet.jsx";
 import DropSetInput from "../components/DropSetInput.jsx";
 import ExercisePicker from "../components/ExercisePicker.jsx";
 import Modal from "../components/Modal.jsx";
+import OnboardingModal from "../components/OnboardingModal.jsx";
 import PRCelebrationModal from "../components/PRCelebrationModal.jsx";
+import QuickActions from "../components/QuickActions.jsx";
+import QuickRecordPanel from "../components/QuickRecordPanel.jsx";
 import RepsPicker from "../components/RepsPicker.jsx";
 import RestTimer from "../components/RestTimer.jsx";
 import SetCompleteAnimation from "../components/SetCompleteAnimation.jsx";
@@ -501,6 +504,8 @@ export default function Today() {
         )}
       </header>
 
+      <QuickActions />
+
       <BodyPartSelector
         options={bodyParts.map((part) => part.label)}
         selected={currentBodyPart}
@@ -550,6 +555,16 @@ export default function Today() {
                   : `上次：${lastRecord.weight ?? ""}kg × ${lastRecord.reps ?? ""}`
                 : "暂无历史记录"}
           </button>
+
+          <QuickRecordPanel
+            exerciseHistory={exerciseHistory}
+            currentWeight={weight}
+            currentReps={reps}
+            onApply={(w, r) => {
+              setWeight(clampWeight(w));
+              setReps(clampReps(r));
+            }}
+          />
 
           <div className="grid gap-3 md:grid-cols-2">
             <WeightPicker
@@ -823,6 +838,8 @@ export default function Today() {
           </button>
         </div>
       </Modal>
+
+      <OnboardingModal />
     </div>
   );
 }
