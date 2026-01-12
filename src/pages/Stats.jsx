@@ -35,24 +35,23 @@ export default function Stats() {
     heatmapData.length > 0;
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-xl flex-col gap-6 px-4 pb-24 pt-6">
+    <div className="mx-auto flex min-h-screen max-w-xl flex-col gap-6 px-4 pb-tab-bar pt-6">
       <header>
-        <p className="text-xs font-medium uppercase tracking-[0.15em] text-app-muted">
+        <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">
           数据统计
         </p>
-        <h1 className="text-xl font-bold text-app-text">训练分析</h1>
+        <h1 className="text-2xl font-bold text-text-primary">训练分析</h1>
       </header>
 
       {!hasData ? (
-        <div className="flex min-h-[50vh] items-center justify-center">
-          <div className="text-center">
-            <p className="text-lg font-semibold text-app-muted">暂无数据</p>
-            <p className="mt-2 text-sm text-app-muted">开始训练吧!</p>
-          </div>
+        <div className="empty-state">
+          <div className="empty-state-icon">📊</div>
+          <p className="empty-state-title">暂无数据</p>
+          <p className="empty-state-description">开始训练吧!</p>
         </div>
       ) : (
         <>
-          <section className="neo-surface-soft rounded-card border border-app-divider p-5">
+          <section className="card">
             <VolumeTrendChart
               data={trendData}
               metric={metric}
@@ -62,16 +61,16 @@ export default function Stats() {
             />
           </section>
 
-          <div className="grid gap-6 md:grid-cols-2">
-            <section className="neo-surface-soft rounded-card border border-app-divider p-5">
+          <div className="grid gap-4 md:grid-cols-2">
+            <section className="card">
               <BodyPartPieChart data={bodyPartDistribution} />
             </section>
-            <section className="neo-surface-soft rounded-card border border-app-divider p-5">
+            <section className="card">
               <PRProgressChart data={prProgress} />
             </section>
           </div>
 
-          <section className="neo-surface-soft rounded-card border border-app-divider p-5">
+          <section className="card">
             <TrainingHeatmap data={heatmapData} />
           </section>
         </>

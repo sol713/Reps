@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import BottomSheet from "../components/BottomSheet.jsx";
 import { bodyParts } from "../data/bodyParts.js";
 import { useExercises } from "../hooks/useExercises.js";
@@ -43,18 +42,20 @@ export default function Exercises() {
   };
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-xl flex-col gap-6 px-4 pb-16 pt-6">
+    <div className="mx-auto flex min-h-screen max-w-xl flex-col gap-6 px-4 pb-tab-bar pt-6">
       <header className="flex items-center justify-between">
-        <Link className="text-xs font-semibold text-app-muted" to="/">
-          返回
-        </Link>
-        <h1 className="text-lg font-semibold">动作库</h1>
+        <div>
+          <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">
+            动作管理
+          </p>
+          <h1 className="text-2xl font-bold text-text-primary">动作库</h1>
+        </div>
         <button
-          className="rounded-full border border-app-divider bg-white px-3 py-1 text-xs font-semibold text-app-muted neo-surface-soft neo-pressable"
+          className="btn btn-primary text-sm"
           type="button"
           onClick={() => setShowAddModal(true)}
         >
-          添加
+          + 添加
         </button>
       </header>
 
@@ -66,11 +67,7 @@ export default function Exercises() {
           const isActive = activeTab === tab.key;
           return (
             <button
-              className={`rounded-full border px-4 py-2 text-xs font-semibold neo-pressable ${
-                isActive
-                  ? "border-app-primary bg-app-primary text-white"
-                  : "border-app-divider bg-app-card text-app-muted"
-              }`}
+              className={`chip ${isActive ? "chip-selected" : ""}`}
               key={tab.key}
               type="button"
               onClick={() => setActiveTab(tab.key)}
@@ -83,34 +80,34 @@ export default function Exercises() {
 
       <div className="space-y-4">
         {loading && (
-          <div className="rounded-card border border-dashed border-app-divider bg-gray-50 py-6 text-center neo-inset">
-            <p className="text-sm text-app-muted">加载中...</p>
+          <div className="empty-state">
+            <div className="loading-spinner" />
           </div>
         )}
         {error && !loading && (
-          <div className="rounded-card border border-dashed border-app-divider bg-gray-50 py-6 text-center neo-inset">
-            <p className="text-sm text-red-500">{error}</p>
+          <div className="card text-center">
+            <p className="text-sm text-danger">{error}</p>
           </div>
         )}
         {groupedExercises.map((part) => (
-          <div className="rounded-card border border-app-divider bg-app-card p-4 neo-surface-soft" key={part.key}>
+          <div className="card" key={part.key}>
             <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold">{part.label}</p>
-              <span className="text-xs text-app-muted">{part.exercises.length}</span>
+              <p className="font-semibold text-text-primary">{part.label}</p>
+              <span className="text-sm text-text-secondary">{part.exercises.length}</span>
             </div>
             <div className="mt-3 space-y-2">
               {part.exercises.length === 0 ? (
-                <p className="text-sm text-app-muted">暂无动作</p>
+                <p className="text-sm text-text-secondary">暂无动作</p>
               ) : (
                 part.exercises.map((exercise) => (
                   <div
-                    className="flex items-center justify-between rounded-input border border-app-divider px-3 py-2 neo-inset"
+                    className="flex items-center justify-between rounded-lg bg-bg-secondary px-4 py-3"
                     key={exercise.id}
                   >
-                    <span className="text-sm font-semibold">{exercise.name}</span>
+                    <span className="font-medium text-text-primary">{exercise.name}</span>
                     {!exercise.is_preset && (
                       <button
-                        className="text-xs font-semibold text-app-muted"
+                        className="text-sm font-medium text-danger transition-opacity active:opacity-70"
                         type="button"
                         onClick={() => deleteExercise(exercise.id)}
                       >
@@ -131,19 +128,23 @@ export default function Exercises() {
         onClose={() => setShowAddModal(false)}
       >
         <div className="space-y-4">
-          <label className="flex flex-col gap-2 rounded-input border border-app-divider bg-app-card px-3 py-2 neo-inset">
-            <span className="text-xs text-app-muted">动作名称</span>
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-text-secondary">
+              动作名称
+            </label>
             <input
-              className="bg-transparent text-sm font-semibold outline-none"
+              className="input"
               placeholder="例如：哑铃阿诺德推举"
               value={newName}
               onChange={(event) => setNewName(event.target.value)}
             />
-          </label>
-          <label className="flex flex-col gap-2 rounded-input border border-app-divider bg-app-card px-3 py-2 neo-inset">
-            <span className="text-xs text-app-muted">所属部位</span>
+          </div>
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-text-secondary">
+              所属部位
+            </label>
             <select
-              className="bg-transparent text-sm font-semibold outline-none"
+              className="input"
               value={newBodyPart}
               onChange={(event) => setNewBodyPart(event.target.value)}
             >
@@ -154,10 +155,10 @@ export default function Exercises() {
                 </option>
               ))}
             </select>
-          </label>
-          {formError && <p className="text-xs text-red-500">{formError}</p>}
+          </div>
+          {formError && <p className="text-sm text-danger">{formError}</p>}
           <button
-            className="w-full rounded-button bg-app-primary px-4 py-3 text-sm font-semibold text-white disabled:opacity-50"
+            className="btn btn-primary w-full"
             type="button"
             disabled={!newName.trim() || !newBodyPart}
             onClick={handleSubmit}

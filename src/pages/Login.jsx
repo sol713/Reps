@@ -25,45 +25,49 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-app-bg px-4">
+    <div className="flex min-h-screen items-center justify-center bg-bg-primary px-4">
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
-          <div className="text-3xl">🏋️</div>
-          <h1 className="mt-2 text-2xl font-semibold">Reps</h1>
-          <p className="mt-1 text-sm text-app-muted">记录每一组</p>
+          <div className="text-4xl">🏋️</div>
+          <h1 className="mt-3 text-2xl font-bold text-text-primary">Reps</h1>
+          <p className="mt-1 text-sm text-text-secondary">记录每一组</p>
         </div>
 
-        <div className="rounded-card border border-app-divider bg-app-card p-5 shadow-sm neo-surface-soft">
+        <div className="card">
           <form className="space-y-4" onSubmit={handleSubmit}>
-            <label className="flex flex-col gap-2 rounded-input border border-app-divider bg-white px-3 py-2 neo-inset">
-              <span className="text-xs text-app-muted">邮箱</span>
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-text-secondary">
+                邮箱
+              </label>
               <input
                 required
-                className="bg-transparent text-sm font-semibold outline-none"
+                className="input"
                 placeholder="your@email.com"
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
               />
-            </label>
+            </div>
 
-            <label className="flex flex-col gap-2 rounded-input border border-app-divider bg-white px-3 py-2 neo-inset">
-              <span className="text-xs text-app-muted">密码</span>
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-text-secondary">
+                密码
+              </label>
               <input
                 required
-                className="bg-transparent text-sm font-semibold outline-none"
+                className="input"
                 minLength={6}
                 placeholder="••••••••"
                 type="password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
               />
-            </label>
+            </div>
 
-            {error && <p className="text-xs text-red-500">{error}</p>}
+            {error && <p className="text-sm text-danger">{error}</p>}
 
             <button
-              className="w-full rounded-button bg-app-primary px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+              className="btn btn-primary w-full"
               disabled={loading}
               type="submit"
             >
@@ -71,10 +75,10 @@ export default function Login() {
             </button>
           </form>
 
-          <div className="mt-4 text-center text-xs text-app-muted">
+          <div className="mt-4 text-center text-sm text-text-secondary">
             {isLogin ? "还没有账号？" : "已有账号？"}
             <button
-              className="ml-2 text-xs font-semibold text-app-primary"
+              className="ml-2 font-semibold text-primary"
               type="button"
               onClick={() => setIsLogin((prev) => !prev)}
             >

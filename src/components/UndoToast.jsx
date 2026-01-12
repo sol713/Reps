@@ -4,14 +4,15 @@ export default function UndoToast({ toast, onUndo, duration = 4000 }) {
   }
 
   return (
-    <div className="undo-toast" role="status">
-      <div className="undo-toast-content">
-        <span className="undo-toast-message">{toast.message}</span>
-        <button className="undo-toast-action" type="button" onClick={onUndo}>
-          撤销
-        </button>
-      </div>
-      <div className="undo-toast-progress" style={{ animationDuration: `${duration}ms` }} />
+    <div className="toast" role="status">
+      <span className="text-sm text-text-primary">{toast.message}</span>
+      <button 
+        className="text-sm font-semibold text-primary" 
+        type="button" 
+        onClick={onUndo}
+      >
+        撤销
+      </button>
     </div>
   );
 }

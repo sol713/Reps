@@ -1,7 +1,9 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import LoadingScreen from "./components/LoadingScreen.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import TabBar from "./components/TabBar.jsx";
 import { AuthProvider, useAuth } from "./hooks/useAuth.jsx";
+import { ThemeProvider } from "./hooks/useTheme.jsx";
 import Exercises from "./pages/Exercises.jsx";
 import History from "./pages/History.jsx";
 import HistoryDetail from "./pages/HistoryDetail.jsx";
@@ -18,7 +20,7 @@ function AppRoutes() {
 
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-app-bg text-app-text">
+      <div className="min-h-screen bg-bg-primary text-text-primary">
         <Routes>
           <Route
             path="/login"
@@ -32,6 +34,7 @@ function AppRoutes() {
             <Route path="/exercises" element={<Exercises />} />
           </Route>
         </Routes>
+        {isAuthenticated && <TabBar />}
       </div>
     </BrowserRouter>
   );
@@ -39,8 +42,10 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppRoutes />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

@@ -6,7 +6,7 @@ export default function Modal({ isOpen, onClose, children }) {
   return (
     <div className="modal-overlay" onClick={onClose} role="presentation">
       <div
-        className="modal-content neo-surface-soft"
+        className="modal-content"
         onClick={(event) => event.stopPropagation()}
         role="dialog"
         aria-modal="true"

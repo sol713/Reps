@@ -15,17 +15,21 @@ export default function PRCelebrationModal({ pr, isOpen, onClose }) {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="pr-modal">
+      <div className="pr-celebration">
         <div className="pr-trophy">🏆</div>
-        <h3 className="text-lg font-bold text-app-text">新纪录！</h3>
-        <p className="text-sm text-app-muted">{pr.exerciseName}</p>
+        <h3 className="mt-2 text-xl font-bold text-text-primary">新纪录！</h3>
+        <p className="text-sm text-text-secondary">{pr.exerciseName}</p>
         <div className="pr-weight">
           <span className="pr-weight-value">{pr.weight}</span>
           <span className="pr-weight-unit">kg</span>
         </div>
-        <div className="pr-improvement">比之前 +{pr.improvement}kg</div>
-        <p className="text-xs text-app-muted">之前记录：{pr.previousMax}kg</p>
-        <button className="btn-primary mt-4 rounded-button px-4 py-2 text-sm font-semibold text-white" type="button" onClick={onClose}>
+        <p className="text-sm font-semibold text-success">比之前 +{pr.improvement}kg</p>
+        <p className="mt-1 text-xs text-text-secondary">之前记录：{pr.previousMax}kg</p>
+        <button 
+          className="btn btn-primary mt-6 w-full" 
+          type="button" 
+          onClick={onClose}
+        >
           太棒了！
         </button>
       </div>

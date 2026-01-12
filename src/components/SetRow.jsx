@@ -36,7 +36,7 @@ export default function SetRow({ set, onDelete = () => {}, onEdit = () => {} }) 
   };
 
   return (
-    <div className="relative overflow-hidden rounded-input border border-app-divider bg-app-card shadow-card transition-shadow duration-200 hover:shadow-card-hover">
+    <div className="relative overflow-hidden rounded-lg border border-border-primary bg-bg-elevated">
       <div
         className="flex items-center justify-between px-4 py-3 transition-transform duration-150"
         style={{ transform: `translateX(${offset}px)` }}
@@ -50,23 +50,23 @@ export default function SetRow({ set, onDelete = () => {}, onEdit = () => {} }) 
         onMouseLeave={handleEnd}
       >
         <div className="flex items-center gap-3">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-app-primary/10 text-xs font-bold text-app-primary">
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
             {set.set_number}
           </span>
           {set.set_type === "drop_set" ? (
-            <div className="text-sm font-semibold">
-              <span className="mr-2 rounded-full bg-gradient-to-r from-orange-400 to-pink-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
-                递减组
+            <div className="text-sm">
+              <span className="mr-2 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
+                递减
               </span>
-              <span className="text-app-text">
+              <span className="text-text-primary">
                 {set.segments?.map((segment, index) => (
                   <span key={`${segment.weight}-${segment.reps}-${index}`}>
                     <span className="font-bold">{segment.weight}</span>
-                    <span className="text-app-muted">kg</span>
-                    <span className="mx-0.5 text-app-muted">×</span>
+                    <span className="text-text-secondary">kg</span>
+                    <span className="mx-0.5 text-text-tertiary">×</span>
                     <span className="font-bold">{segment.reps}</span>
                     {index < (set.segments?.length ?? 0) - 1 && (
-                      <span className="mx-1 text-app-muted">→</span>
+                      <span className="mx-1 text-text-tertiary">→</span>
                     )}
                   </span>
                 ))}
@@ -74,16 +74,16 @@ export default function SetRow({ set, onDelete = () => {}, onEdit = () => {} }) 
             </div>
           ) : (
             <div className="text-sm">
-              <span className="font-bold text-app-text">{set.weight}</span>
-              <span className="text-app-muted">kg</span>
-              <span className="mx-1 text-app-muted">×</span>
-              <span className="font-bold text-app-text">{set.reps}</span>
+              <span className="font-bold text-text-primary">{set.weight}</span>
+              <span className="text-text-secondary">kg</span>
+              <span className="mx-1 text-text-tertiary">×</span>
+              <span className="font-bold text-text-primary">{set.reps}</span>
             </div>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <button
-            className="text-xs font-semibold text-app-primary"
+            className="min-h-touch px-3 text-sm font-semibold text-primary transition-opacity active:opacity-70"
             type="button"
             onClick={(event) => {
               event.stopPropagation();
@@ -92,14 +92,14 @@ export default function SetRow({ set, onDelete = () => {}, onEdit = () => {} }) 
           >
             编辑
           </button>
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-app-success/15 text-sm text-app-success">
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-success/15 text-sm text-success">
             ✓
           </span>
         </div>
       </div>
       {showDelete && (
         <button
-          className="absolute right-0 top-0 flex h-full items-center justify-center bg-gradient-to-r from-red-500 to-red-600 px-5 text-xs font-bold uppercase tracking-wider text-white transition-all duration-150 hover:from-red-600 hover:to-red-700 active:scale-95"
+          className="absolute right-0 top-0 flex h-full min-w-[80px] items-center justify-center bg-danger px-4 text-sm font-semibold text-white transition-all active:bg-red-700"
           type="button"
           onClick={() => {
             onDelete(set.id);

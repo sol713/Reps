@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import BodyPartSelector from "../components/BodyPartSelector.jsx";
 import BottomSheet from "../components/BottomSheet.jsx";
 import DropSetInput from "../components/DropSetInput.jsx";
@@ -60,7 +60,7 @@ function clampReps(value) {
 
 export default function Today() {
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const [currentBodyPart, setCurrentBodyPart] = useState("chest");
   const [currentExercise, setCurrentExercise] = useState(null);
   const [showExercisePicker, setShowExercisePicker] = useState(false);
@@ -398,49 +398,18 @@ export default function Today() {
   };
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-xl flex-col gap-6 px-4 pb-24 pt-6">
-      <header className="flex items-center justify-between">
-        <div>
-          <p className="text-xs font-medium uppercase tracking-[0.15em] text-app-muted">
-            今日训练
-          </p>
-          <h1 className="text-xl font-bold text-app-text">{formatDate(today)}</h1>
-          <div className="mt-2">
-            <StreakBadge streak={streak} />
+    <div className="mx-auto flex min-h-screen max-w-xl flex-col gap-6 px-4 pb-tab-bar pt-6">
+      <header>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">
+              今日训练
+            </p>
+            <h1 className="text-2xl font-bold text-text-primary">{formatDate(today)}</h1>
           </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link
-            className="rounded-full border border-app-divider bg-white px-3 py-1.5 text-xs font-semibold text-app-muted shadow-sm transition-all hover:border-app-muted hover:bg-gray-50 active:scale-95 neo-surface-soft neo-pressable"
-            to="/history"
-          >
-            历史
-          </Link>
-          <Link
-            className="rounded-full border border-app-divider bg-white px-3 py-1.5 text-xs font-semibold text-app-muted shadow-sm transition-all hover:border-app-muted hover:bg-gray-50 active:scale-95 neo-surface-soft neo-pressable"
-            to="/stats"
-          >
-            统计
-          </Link>
-          <Link
-            className="rounded-full border border-app-divider bg-white px-3 py-1.5 text-xs font-semibold text-app-muted shadow-sm transition-all hover:border-app-muted hover:bg-gray-50 active:scale-95 neo-surface-soft neo-pressable"
-            to="/exercises"
-          >
-            动作库
-          </Link>
-          <button
-            className="rounded-full border border-app-divider bg-white px-3 py-1.5 text-xs font-semibold text-app-muted shadow-sm transition-all hover:border-app-muted hover:bg-gray-50 active:scale-95 neo-surface-soft neo-pressable"
-            type="button"
-            onClick={signOut}
-          >
-            退出
-          </button>
+          <StreakBadge streak={streak} />
         </div>
       </header>
-
-      {user?.email && (
-        <p className="text-xs text-app-muted">已登录：{user.email}</p>
-      )}
 
       <BodyPartSelector
         options={bodyParts.map((part) => part.label)}
@@ -449,41 +418,32 @@ export default function Today() {
       />
 
       <button
-        className="interactive-card neo-surface-soft neo-pressable flex items-center justify-between rounded-card border border-app-divider bg-white px-4 py-4 text-left shadow-card"
+        className="card card-interactive flex items-center justify-between"
         type="button"
         onClick={() => setShowExercisePicker(true)}
       >
         <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-app-muted">选择动作</p>
-          <p className="mt-0.5 text-base font-bold text-app-text">
+          <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">选择动作</p>
+          <p className="mt-1 text-lg font-bold text-text-primary">
             {currentExercise?.name ?? "点击选择动作"}
           </p>
         </div>
-        <span className="rounded-full bg-app-primary/10 px-3 py-1 text-xs font-semibold text-app-primary">
-          搜索
-        </span>
+        <span className="badge">搜索</span>
       </button>
 
       {currentExercise && (
-        <section className="fade-in space-y-4 rounded-card neo-surface-soft p-5">
+        <section className="animate-fade-in card space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-medium uppercase tracking-[0.15em] text-app-muted">
+              <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">
                 当前动作
               </p>
-              <h2 className="text-lg font-bold text-app-text">{currentExercise.name}</h2>
+              <h2 className="text-lg font-bold text-text-primary">{currentExercise.name}</h2>
             </div>
-            <button
-              className="rounded-button border border-app-divider bg-white px-3 py-1.5 text-xs font-semibold text-app-muted shadow-sm transition-all hover:border-app-muted hover:bg-gray-50 active:scale-95 neo-surface-soft neo-pressable"
-              type="button"
-              onClick={() => navigate("/history")}
-            >
-              历史
-            </button>
           </div>
 
           <button
-            className="flex w-full items-center gap-2 rounded-input border border-app-divider bg-gray-50 px-4 py-2.5 text-left text-sm text-app-muted transition-colors hover:bg-gray-100 neo-inset"
+            className="flex w-full items-center gap-2 rounded-md bg-bg-secondary px-4 py-3 text-left text-sm text-text-secondary transition-colors active:bg-bg-tertiary"
             type="button"
             onClick={() => navigate("/history")}
           >
@@ -519,10 +479,7 @@ export default function Today() {
               const isActive = setType === item.key;
               return (
                 <button
-                  className={`flex-1 rounded-button border px-4 py-2.5 text-sm font-semibold transition-all duration-200 ${isActive
-                      ? "btn-primary border-transparent text-white"
-                      : "border-app-divider bg-white text-app-muted hover:border-app-muted hover:bg-gray-50 active:scale-98"
-                    }`}
+                  className={`chip flex-1 ${isActive ? "chip-selected" : ""}`}
                   key={item.key}
                   type="button"
                   onClick={() => setSetType(item.key)}
@@ -562,7 +519,7 @@ export default function Today() {
           )}
 
           <button
-            className="btn-primary w-full rounded-button px-4 py-3.5 text-sm font-bold text-white disabled:opacity-50"
+            className="btn btn-primary w-full text-base"
             type="button"
             disabled={workoutLoading}
             onClick={handleRecordSet}
@@ -574,29 +531,27 @@ export default function Today() {
 
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-bold text-app-text">已完成</h3>
-          <span className="rounded-full bg-app-success/10 px-2 py-0.5 text-xs font-semibold text-app-success">
-            {sets.length} 组
-          </span>
+          <h3 className="font-bold text-text-primary">已完成</h3>
+          <span className="badge badge-success">{sets.length} 组</span>
         </div>
         {workoutLoading ? (
-          <div className="rounded-card border border-dashed border-app-divider bg-gray-50 neo-inset py-8 text-center">
-            <p className="text-sm text-app-muted">加载中...</p>
+          <div className="empty-state">
+            <div className="loading-spinner" />
           </div>
         ) : workoutError ? (
-          <div className="rounded-card border border-dashed border-app-divider bg-gray-50 neo-inset py-8 text-center">
-            <p className="text-sm text-red-500">{workoutError}</p>
+          <div className="empty-state">
+            <p className="text-sm text-danger">{workoutError}</p>
           </div>
         ) : todayGroups.length === 0 ? (
-          <div className="rounded-card border border-dashed border-app-divider bg-gray-50 neo-inset py-8 text-center">
-            <p className="text-sm text-app-muted">还没有记录，开始你的第一组训练吧！</p>
+          <div className="card text-center">
+            <p className="text-sm text-text-secondary">还没有记录，开始你的第一组训练吧！</p>
           </div>
         ) : (
           todayGroups.map((group) => (
-            <div className="fade-in space-y-2" key={group.exerciseId}>
+            <div className="animate-fade-in space-y-2" key={group.exerciseId}>
               <div className="flex items-center justify-between">
-                <p className="text-sm font-bold text-app-text">{group.exerciseName}</p>
-                <span className="text-xs text-app-muted">
+                <p className="font-semibold text-text-primary">{group.exerciseName}</p>
+                <span className="text-sm text-text-secondary">
                   {group.sets.length} 组
                 </span>
               </div>
@@ -615,29 +570,29 @@ export default function Today() {
         )}
       </section>
 
-      <section className="stat-card rounded-card neo-surface-soft p-5">
-        <p className="text-xs font-medium uppercase tracking-[0.15em] text-app-muted">
+      <section className="card">
+        <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">
           今日总览
         </p>
         <div className="mt-4 grid grid-cols-3 gap-3 text-center">
-          <div className="rounded-input bg-gradient-to-br from-blue-50 to-indigo-50 px-3 py-4">
-            <p className="text-xs font-medium text-app-muted">部位</p>
-            <p className="mt-1 text-sm font-bold text-app-text">{todaySummary.bodyLabel}</p>
+          <div className="rounded-lg bg-bg-secondary px-3 py-4">
+            <p className="text-xs font-medium text-text-secondary">部位</p>
+            <p className="mt-1 text-sm font-bold text-text-primary">{todaySummary.bodyLabel}</p>
           </div>
-          <div className="rounded-input bg-gradient-to-br from-purple-50 to-pink-50 px-3 py-4">
-            <p className="text-xs font-medium text-app-muted">动作</p>
-            <p className="mt-1 text-lg font-bold text-app-text">{todaySummary.exerciseCount}</p>
+          <div className="rounded-lg bg-bg-secondary px-3 py-4">
+            <p className="text-xs font-medium text-text-secondary">动作</p>
+            <p className="mt-1 text-xl font-bold text-text-primary">{todaySummary.exerciseCount}</p>
           </div>
-          <div className="rounded-input bg-gradient-to-br from-green-50 to-emerald-50 px-3 py-4">
-            <p className="text-xs font-medium text-app-muted">组数</p>
-            <p className="mt-1 text-lg font-bold text-app-text">{todaySummary.setCount}</p>
+          <div className="rounded-lg bg-bg-secondary px-3 py-4">
+            <p className="text-xs font-medium text-text-secondary">组数</p>
+            <p className="mt-1 text-xl font-bold text-text-primary">{todaySummary.setCount}</p>
           </div>
         </div>
       </section>
 
       {sets.length > 0 && (
         <button
-          className="btn-primary w-full rounded-button px-4 py-3 text-sm font-semibold text-white"
+          className="btn btn-primary w-full"
           type="button"
           onClick={() => setShowSummary(true)}
         >
@@ -646,7 +601,7 @@ export default function Today() {
       )}
 
       {isResting && (
-        <div className="fixed inset-x-0 bottom-4 z-40 px-4">
+        <div className="fixed inset-x-0 bottom-[calc(56px+env(safe-area-inset-bottom)+16px)] z-40 px-4">
           <RestTimer
             key={restKey}
             duration={60}
@@ -697,16 +652,16 @@ export default function Today() {
         <div className="space-y-4">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs font-medium uppercase tracking-[0.15em] text-app-muted">
+              <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">
                 编辑记录
               </p>
-              <h3 className="text-lg font-bold text-app-text">
+              <h3 className="text-lg font-bold text-text-primary">
                 {editingSet?.exercise_name ?? "当前动作"}
               </h3>
-              <p className="text-xs text-app-muted">第 {editingSet?.set_number} 组</p>
+              <p className="text-sm text-text-secondary">第 {editingSet?.set_number} 组</p>
             </div>
             <button
-              className="rounded-full border border-app-divider px-3 py-1 text-xs font-semibold text-app-muted"
+              className="btn-ghost min-h-[36px] px-3 py-1.5 text-sm font-semibold"
               type="button"
               onClick={handleEditClose}
             >
@@ -757,10 +712,10 @@ export default function Today() {
             </div>
           )}
 
-          {editError && <p className="text-sm text-red-500">{editError}</p>}
+          {editError && <p className="text-sm text-danger">{editError}</p>}
 
           <button
-            className="btn-primary w-full rounded-button px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+            className="btn btn-primary w-full"
             type="button"
             disabled={editLoading}
             onClick={handleEditSave}

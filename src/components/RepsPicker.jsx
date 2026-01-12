@@ -19,25 +19,29 @@ export default function RepsPicker({
   };
 
   return (
-    <div className="flex flex-col gap-3 rounded-input border border-app-divider bg-app-card px-4 py-4 shadow-card">
+    <div className="card flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium uppercase tracking-[0.15em] text-app-muted">
+        <span className="text-sm font-medium text-text-secondary">
           次数
         </span>
-        <span className="text-base font-bold tabular-nums text-app-text">
-          {value} <span className="text-sm font-medium text-app-muted">次</span>
-        </span>
+        <div className="flex items-baseline gap-1">
+          <span className="text-2xl font-bold tabular-nums text-text-primary">
+            {value}
+          </span>
+          <span className="text-sm font-medium text-text-secondary">次</span>
+        </div>
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4">
         <button
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-app-divider bg-white text-lg font-semibold text-app-primary shadow-sm transition-all duration-150 hover:border-app-primary hover:bg-blue-50 active:scale-90 active:shadow-none"
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-bg-secondary text-xl font-semibold text-primary transition-all active:scale-90 active:bg-bg-tertiary"
           type="button"
+          aria-label="减少次数"
           onClick={() => handleAdjust(value - 1)}
         >
           −
         </button>
         <input
-          className="w-full"
+          className="flex-1"
           max={max}
           min={min}
           step="1"
@@ -46,8 +50,9 @@ export default function RepsPicker({
           onChange={(event) => handleAdjust(Number(event.target.value))}
         />
         <button
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-app-divider bg-white text-lg font-semibold text-app-primary shadow-sm transition-all duration-150 hover:border-app-primary hover:bg-blue-50 active:scale-90 active:shadow-none"
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-bg-secondary text-xl font-semibold text-primary transition-all active:scale-90 active:bg-bg-tertiary"
           type="button"
+          aria-label="增加次数"
           onClick={() => handleAdjust(value + 1)}
         >
           +

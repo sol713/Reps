@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { bodyParts } from "../data/bodyParts.js";
 import { formatDate, formatWeekday } from "../lib/date.js";
 import { normalizeSets } from "../lib/sets.js";
@@ -82,44 +82,34 @@ export default function History() {
   }, [user]);
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-xl flex-col gap-6 px-4 pb-16 pt-6">
-      <header className="flex items-center gap-4">
-        <Link
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-app-divider bg-white text-app-muted shadow-sm transition-all hover:bg-gray-50 active:scale-95 neo-surface-soft neo-pressable"
-          to="/"
-        >
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </Link>
-        <h1 className="text-xl font-bold text-app-text">历史记录</h1>
+    <div className="mx-auto flex min-h-screen max-w-xl flex-col gap-6 px-4 pb-tab-bar pt-6">
+      <header>
+        <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">
+          训练历史
+        </p>
+        <h1 className="text-2xl font-bold text-text-primary">历史记录</h1>
       </header>
 
       {loading ? (
-        <div className="flex items-center justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-app-primary border-t-transparent"></div>
+        <div className="empty-state">
+          <div className="loading-spinner" />
         </div>
       ) : error ? (
-        <div className="rounded-card border border-dashed border-app-divider bg-gray-50 neo-inset p-6 text-center">
-          <p className="text-sm text-red-500">{error}</p>
+        <div className="card text-center">
+          <p className="text-sm text-danger">{error}</p>
         </div>
       ) : workoutLogs.length === 0 ? (
-        <div className="rounded-card border border-dashed border-app-divider bg-gray-50 neo-inset p-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-app-primary/10">
-            <svg className="h-8 w-8 text-app-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-          </div>
-          <p className="text-lg font-bold text-app-text">还没有训练记录</p>
-          <p className="mt-2 text-sm text-app-muted">
-            去记录你的第一次训练吧
-          </p>
-          <Link
-            className="btn-primary mt-4 inline-block rounded-button px-6 py-2.5 text-sm font-semibold text-white"
-            to="/"
+        <div className="empty-state">
+          <div className="empty-state-icon">📋</div>
+          <p className="empty-state-title">还没有训练记录</p>
+          <p className="empty-state-description">去记录你的第一次训练吧</p>
+          <button
+            className="btn btn-primary mt-4"
+            type="button"
+            onClick={() => navigate("/")}
           >
             开始训练
-          </Link>
+          </button>
         </div>
       ) : (
         <div className="space-y-3">
@@ -127,19 +117,19 @@ export default function History() {
             const summary = buildSummary(log);
             return (
               <button
-                className="fade-in interactive-card neo-surface-soft neo-pressable flex w-full items-center justify-between rounded-card border border-app-divider bg-white p-4 text-left shadow-card"
+                className="card card-interactive animate-fade-in flex w-full items-center justify-between text-left"
                 key={log.id}
                 type="button"
                 style={{ animationDelay: `${index * 50}ms` }}
                 onClick={() => navigate(`/history/${log.date}`)}
               >
                 <div>
-                  <p className="text-xs font-medium text-app-muted">{formatWeekday(log.date)}</p>
-                  <p className="mt-0.5 text-base font-bold text-app-text">{formatDate(log.date)}</p>
+                  <p className="text-xs font-medium text-text-secondary">{formatWeekday(log.date)}</p>
+                  <p className="mt-0.5 text-base font-bold text-text-primary">{formatDate(log.date)}</p>
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     {summary.bodyParts.map((part) => (
                       <span
-                        className="rounded-full bg-gradient-to-r from-blue-100 to-indigo-100 px-2.5 py-0.5 text-[10px] font-semibold text-app-primary"
+                        className="rounded-full bg-primary/10 px-2.5 py-0.5 text-[10px] font-semibold text-primary"
                         key={part}
                       >
                         {part}
@@ -149,14 +139,14 @@ export default function History() {
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="text-right">
-                    <p className="text-xs text-app-muted">
+                    <p className="text-xs text-text-secondary">
                       {summary.exerciseCount} 动作
                     </p>
-                    <p className="text-sm font-bold text-app-text">
+                    <p className="text-sm font-bold text-text-primary">
                       {summary.totalSets} 组
                     </p>
                   </div>
-                  <svg className="h-5 w-5 text-app-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="h-5 w-5 text-text-tertiary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </div>

@@ -4,8 +4,8 @@ import { hapticFeedback } from "../lib/haptics.js";
 
 export default function RestTimer({
   duration = 60,
-  onComplete = () => { },
-  onSkip = () => { }
+  onComplete = () => {},
+  onSkip = () => {}
 }) {
   const [remaining, setRemaining] = useState(duration);
   const [isPaused, setIsPaused] = useState(false);
@@ -21,8 +21,8 @@ export default function RestTimer({
     }
 
     const timer = setInterval(() => {
-        setRemaining((prev) => {
-          if (prev <= 1) {
+      setRemaining((prev) => {
+        if (prev <= 1) {
           hapticFeedback("timerEnd");
           onComplete();
           return 0;
@@ -35,34 +35,35 @@ export default function RestTimer({
   }, [isPaused, onComplete, remaining]);
 
   const progress = ((duration - remaining) / duration) * 100;
+  const isWarning = remaining <= 10 && remaining > 0;
 
   return (
-    <div className="glass rounded-card border border-white/20 p-4 shadow-floating neo-surface-soft">
-      <div className="h-2 w-full overflow-hidden rounded-full bg-app-divider/50">
+    <div className="rest-timer">
+      <div className="progress-bar">
         <div
-          className="progress-bar h-full transition-all duration-300"
+          className="progress-bar-fill"
           style={{ width: `${progress}%` }}
         />
       </div>
       <div className="mt-4 flex items-center justify-between">
         <div>
-          <p className="text-xs font-medium uppercase tracking-[0.15em] text-app-muted">
+          <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">
             休息中
           </p>
-          <p className={`text-2xl font-bold tabular-nums ${remaining <= 10 ? "animate-pulse-soft text-app-danger" : "text-app-text"}`}>
-            {remaining > 0 ? formatDuration(remaining) : "已完成"}
+          <p className={`rest-timer-time ${isWarning ? "rest-timer-warning" : ""}`}>
+            {remaining > 0 ? formatDuration(remaining) : "完成"}
           </p>
         </div>
         <div className="flex items-center gap-3">
           <button
-            className="rounded-button border border-app-divider bg-white px-4 py-2 text-xs font-semibold uppercase tracking-wider text-app-muted shadow-sm transition-all duration-150 hover:border-app-muted hover:bg-gray-50 active:scale-95 neo-surface-soft neo-pressable"
+            className="btn btn-secondary text-sm"
             type="button"
             onClick={() => setIsPaused((prev) => !prev)}
           >
             {isPaused ? "继续" : "暂停"}
           </button>
           <button
-            className="btn-primary rounded-button px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white neo-pressable"
+            className="btn btn-primary text-sm"
             type="button"
             onClick={() => {
               setIsPaused(true);

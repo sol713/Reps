@@ -25,34 +25,40 @@ export default function ExercisePicker({
 
   return (
     <div className="space-y-5">
-      <label className="flex flex-col gap-2 rounded-input border border-app-divider bg-white px-4 py-3 shadow-card transition-shadow focus-within:border-app-primary focus-within:shadow-button">
-        <span className="text-xs font-medium uppercase tracking-wider text-app-muted">搜索动作</span>
+      <div className="relative">
         <input
           autoFocus
-          className="bg-transparent text-sm font-semibold text-app-text outline-none placeholder:text-app-muted/50"
-          placeholder="搜索动作（支持简称）"
+          className="input pl-10"
+          placeholder="搜索动作..."
           value={searchQuery}
           onChange={(event) => setSearchQuery(event.target.value)}
         />
-      </label>
+        <svg
+          className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-text-tertiary"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </div>
 
       {!searchQuery && recentExercises.length > 0 && (
         <section className="space-y-3">
-          <p className="text-xs font-medium uppercase tracking-[0.15em] text-app-muted">
+          <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">
             最近使用
           </p>
           <div className="space-y-2">
             {recentExercises.map((exercise) => (
               <button
-                className="interactive-card flex w-full items-center justify-between rounded-input border border-app-divider bg-white px-4 py-3 text-left shadow-card"
+                className="card card-interactive flex w-full items-center justify-between text-left"
                 key={exercise.id}
                 type="button"
                 onClick={() => onSelect(exercise)}
               >
-                <span className="text-sm font-semibold text-app-text">{exercise.name}</span>
-                <span className="rounded-full bg-app-primary/10 px-2 py-0.5 text-[10px] font-semibold text-app-primary">
-                  最近
-                </span>
+                <span className="font-semibold text-text-primary">{exercise.name}</span>
+                <span className="badge text-[10px]">最近</span>
               </button>
             ))}
           </div>
@@ -60,41 +66,43 @@ export default function ExercisePicker({
       )}
 
       <section className="space-y-3">
-        <p className="text-xs font-medium uppercase tracking-[0.15em] text-app-muted">
-          {bodyPart ? `${bodyPartLabel}部动作` : "全部动作"}
+        <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">
+          {bodyPart ? `${bodyPartLabel}动作` : "全部动作"}
         </p>
         <div className="space-y-2">
           {loading && (
-            <p className="py-4 text-center text-sm text-app-muted">加载中...</p>
+            <div className="empty-state py-8">
+              <div className="loading-spinner" />
+            </div>
           )}
           {error && !loading && (
-            <p className="py-4 text-center text-sm text-red-500">{error}</p>
+            <p className="py-4 text-center text-sm text-danger">{error}</p>
           )}
           {!loading &&
             !error &&
             filteredExercises.map((exercise) => (
               <button
-                className="interactive-card flex w-full items-center justify-between rounded-input border border-app-divider bg-white px-4 py-3 text-left shadow-card"
+                className="card card-interactive flex w-full items-center justify-between text-left"
                 key={exercise.id}
                 type="button"
                 onClick={() => onSelect(exercise)}
               >
-                <span className="text-sm font-semibold text-app-text">{exercise.name}</span>
+                <span className="font-semibold text-text-primary">{exercise.name}</span>
                 {!exercise.is_preset && (
-                  <span className="rounded-full bg-gradient-to-r from-purple-400 to-pink-400 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
+                  <span className="rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-2 py-0.5 text-[10px] font-bold text-white">
                     自定义
                   </span>
                 )}
               </button>
             ))}
           {!loading && !error && filteredExercises.length === 0 && (
-            <p className="py-4 text-center text-sm text-app-muted">没有匹配的动作</p>
+            <p className="py-8 text-center text-sm text-text-secondary">没有匹配的动作</p>
           )}
         </div>
       </section>
 
       <button
-        className="w-full rounded-button border-2 border-dashed border-app-primary/40 bg-app-primary/5 px-4 py-3 text-sm font-semibold text-app-primary transition-all duration-200 hover:border-app-primary hover:bg-app-primary/10 active:scale-98"
+        className="w-full rounded-lg border-2 border-dashed border-primary/40 bg-primary/5 py-3 text-sm font-semibold text-primary transition-all active:scale-[0.98] active:bg-primary/10"
         type="button"
         onClick={onAdd}
       >

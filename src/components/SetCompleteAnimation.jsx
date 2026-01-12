@@ -4,7 +4,7 @@ import { hapticFeedback } from "../lib/haptics.js";
 const particles = Array.from({ length: 8 }, (_, index) => ({
   id: index,
   angle: `${(360 / 8) * index}deg`,
-  color: ["#34C759", "#007AFF", "#FF9500"][index % 3]
+  color: ["#30D158", "#0A84FF", "#FF9F0A"][index % 3]
 }));
 
 export default function SetCompleteAnimation({ isVisible, onComplete = () => {} }) {

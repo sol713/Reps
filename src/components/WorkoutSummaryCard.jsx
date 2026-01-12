@@ -19,50 +19,47 @@ export default function WorkoutSummaryCard({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="summary-modal">
-        <div className="summary-icon">💪</div>
-        <h3 className="text-lg font-bold text-app-text">今日训练完成！</h3>
-        <div className="summary-grid">
+      <div className="space-y-4 text-center">
+        <div className="text-4xl">💪</div>
+        <h3 className="text-xl font-bold text-text-primary">今日训练完成！</h3>
+        
+        <div className="grid grid-cols-2 gap-3 rounded-lg bg-bg-secondary p-4">
           <div>
-            <p className="text-xs text-app-muted">训练部位</p>
-            <p className="text-sm font-semibold">
+            <p className="text-xs text-text-secondary">训练部位</p>
+            <p className="mt-1 font-semibold text-text-primary">
               {todayStats.bodyParts.join("、") || "-"}
             </p>
           </div>
           <div>
-            <p className="text-xs text-app-muted">动作</p>
-            <p className="text-sm font-semibold">{todayStats.exerciseCount}</p>
+            <p className="text-xs text-text-secondary">动作</p>
+            <p className="mt-1 font-semibold text-text-primary">{todayStats.exerciseCount}</p>
           </div>
           <div>
-            <p className="text-xs text-app-muted">总组数</p>
-            <p className="text-sm font-semibold">{todayStats.totalSets}</p>
+            <p className="text-xs text-text-secondary">总组数</p>
+            <p className="mt-1 font-semibold text-text-primary">{todayStats.totalSets}</p>
           </div>
           <div>
-            <p className="text-xs text-app-muted">总容量</p>
-            <p className="text-sm font-semibold">
+            <p className="text-xs text-text-secondary">总容量</p>
+            <p className="mt-1 font-semibold text-text-primary">
               {formatVolume(todayStats.totalVolume)}
             </p>
           </div>
         </div>
 
-        <div className="summary-compare">
+        <div className="space-y-1 text-sm">
           {yesterdayStats === undefined && (
-            <p className="text-xs text-app-muted">对比加载中...</p>
+            <p className="text-text-secondary">对比加载中...</p>
           )}
           {yesterdayStats === null && (
-            <p className="text-xs text-app-muted">昨天休息，今天真棒！</p>
+            <p className="text-text-secondary">昨天休息，今天真棒！</p>
           )}
           {yesterdayStats && setsDiff !== 0 && (
-            <p
-              className={`text-xs ${
-                setsDiff > 0 ? "text-app-success" : "text-app-muted"
-              }`}
-            >
+            <p className={setsDiff > 0 ? "text-success" : "text-text-secondary"}>
               比昨天{setsDiff > 0 ? "多" : "少"} {Math.abs(setsDiff)} 组
             </p>
           )}
           {yesterdayStats && exercisesDiff !== 0 && (
-            <p className="text-xs text-app-muted">
+            <p className="text-text-secondary">
               动作数变化 {exercisesDiff > 0 ? "+" : ""}
               {exercisesDiff}
             </p>
@@ -70,17 +67,19 @@ export default function WorkoutSummaryCard({
         </div>
 
         {streak > 0 && (
-          <div className="summary-streak">🔥 连续第 {streak} 天</div>
+          <div className="inline-block rounded-full bg-gradient-to-r from-orange-500 to-pink-500 px-4 py-2 text-sm font-semibold text-white">
+            🔥 连续第 {streak} 天
+          </div>
         )}
 
         {newPRs.length > 0 && (
-          <div className="summary-pr">
-            <p className="text-xs font-semibold text-app-text">🎉 今日突破</p>
-            <div className="mt-2 space-y-1">
+          <div className="rounded-lg border border-border-primary p-4 text-left">
+            <p className="font-semibold text-text-primary">🎉 今日突破</p>
+            <div className="mt-2 space-y-2">
               {newPRs.map((pr) => (
-                <div className="summary-pr-item" key={pr.exerciseId}>
-                  <span className="text-sm font-semibold">{pr.exerciseName}</span>
-                  <span className="text-xs text-app-muted">{pr.weight}kg</span>
+                <div className="flex items-center justify-between" key={pr.exerciseId}>
+                  <span className="font-medium text-text-primary">{pr.exerciseName}</span>
+                  <span className="text-sm text-primary font-semibold">{pr.weight}kg</span>
                 </div>
               ))}
             </div>
@@ -88,7 +87,7 @@ export default function WorkoutSummaryCard({
         )}
 
         <button
-          className="btn-primary mt-4 w-full rounded-button px-4 py-2 text-sm font-semibold text-white"
+          className="btn btn-primary w-full"
           type="button"
           onClick={onClose}
         >
