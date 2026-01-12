@@ -2,14 +2,22 @@ import { useEffect, useRef, useState } from "react";
 
 export default function BottomSheet({ isOpen, onClose, title, children }) {
   const [dragOffset, setDragOffset] = useState(0);
+  const [shouldRender, setShouldRender] = useState(false);
   const startY = useRef(0);
   const isDragging = useRef(false);
 
   useEffect(() => {
-    if (!isOpen) {
+    if (isOpen) {
+      setShouldRender(true);
       setDragOffset(0);
     }
   }, [isOpen]);
+
+  const handleTransitionEnd = () => {
+    if (!isOpen) {
+      setShouldRender(false);
+    }
+  };
 
   const handlePointerDown = (event) => {
     startY.current = event.clientY;
@@ -36,12 +44,17 @@ export default function BottomSheet({ isOpen, onClose, title, children }) {
     }
   };
 
+  if (!shouldRender) {
+    return null;
+  }
+
   return (
     <>
       <div
         className={`bottom-sheet-overlay ${isOpen ? "opacity-100" : "pointer-events-none opacity-0"}`}
         role="presentation"
         onClick={onClose}
+        onTransitionEnd={handleTransitionEnd}
         style={{ transition: "opacity 300ms ease" }}
       />
       <div
@@ -54,6 +67,7 @@ export default function BottomSheet({ isOpen, onClose, title, children }) {
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
+        onTransitionEnd={handleTransitionEnd}
       >
         <div className="bottom-sheet-handle" />
         {title && (
