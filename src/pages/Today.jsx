@@ -15,6 +15,7 @@ import RPESelector from "../components/RPESelector.jsx";
 import SetCompleteAnimation from "../components/SetCompleteAnimation.jsx";
 import SetNoteInput from "../components/SetNoteInput.jsx";
 import SetRow from "../components/SetRow.jsx";
+import SmartStartCard from "../components/SmartStartCard.jsx";
 import StreakBadge from "../components/StreakBadge.jsx";
 import UndoToast from "../components/UndoToast.jsx";
 
@@ -30,6 +31,7 @@ import { useAuth } from "../hooks/useAuth.jsx";
 import { useExercises } from "../hooks/useExercises.js";
 import { usePRDetector } from "../hooks/usePRDetector.js";
 import { useStreak } from "../hooks/useStreak.js";
+import { useSmartSuggestion } from "../hooks/useSmartSuggestion.js";
 import { useUndoToast } from "../hooks/useUndoToast.js";
 import { useWorkout } from "../hooks/useWorkout.js";
 
@@ -120,6 +122,39 @@ export default function Today() {
   const { streak } = useStreak(sets.length);
   const { newPR, checkForPR, clearPR } = usePRDetector();
   const { toast, showUndo, handleUndo } = useUndoToast();
+  const {
+    loading: smartLoading,
+    suggestedPart,
+    lastWorkout: smartLastWorkout,
+    getExercisesFromLastWorkout
+  } = useSmartSuggestion();
+
+  const handleSmartStart = async () => {
+    const exercisesList = getExercisesFromLastWorkout();
+    if (exercisesList.length === 0) return;
+
+    setCurrentBodyPart(suggestedPart);
+    await startWorkout();
+
+    const firstExercise = exercisesList[0];
+    setCurrentExercise({
+      id: firstExercise.exerciseId,
+      name: firstExercise.exerciseName,
+      body_part: firstExercise.bodyPart
+    });
+
+    if (firstExercise.sets.length > 0) {
+      const lastSet = firstExercise.sets[firstExercise.sets.length - 1];
+      setWeight(clampWeight(lastSet.weight));
+      setReps(clampReps(lastSet.reps));
+    }
+
+    hapticFeedback("success");
+  };
+
+  const handleChangeSuggestedPart = () => {
+    setShowExercisePicker(true);
+  };
 
   useEffect(() => {
     const template = location.state?.template;
@@ -523,6 +558,16 @@ export default function Today() {
       </header>
 
       <QuickActions />
+
+      {!todayLog && !smartLoading && suggestedPart && (
+        <SmartStartCard
+          suggestedPart={suggestedPart}
+          lastWorkout={smartLastWorkout}
+          exerciseCount={getExercisesFromLastWorkout().length}
+          onStart={handleSmartStart}
+          onChangePart={handleChangeSuggestedPart}
+        />
+      )}
 
       <BodyPartSelector
         options={bodyParts.map((part) => part.label)}

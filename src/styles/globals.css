@@ -1228,3 +1228,87 @@ input[type="range"]::-moz-range-thumb {
 .note-badge:active {
   transform: scale(0.9);
 }
+
+/* ========================================
+   SMART START CARD
+   ======================================== */
+
+.smart-start-card {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  border-radius: var(--radius-xl);
+  padding: var(--space-lg);
+  color: #FFFFFF;
+  box-shadow: var(--shadow-lg);
+}
+
+.smart-start-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.smart-start-icon {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.smart-start-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.smart-start-label {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.smart-start-part {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.smart-start-info {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.smart-start-info-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.smart-start-actions {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.smart-start-btn {
+  flex: 1;
+  background-color: #FFFFFF;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.smart-start-btn:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.smart-start-btn:active {
+  transform: scale(0.98);
+}
+
+.smart-start-btn-alt {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.smart-start-btn-alt:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
