@@ -7,7 +7,7 @@ import { supabase } from "../lib/supabase.js";
 import { useAuth } from "../hooks/useAuth.jsx";
 
 const LOG_SELECT =
-  "id,date,workout_sets(id,exercise_id,set_number,set_type,weight,reps,segments,created_at,exercises(name,body_part))";
+  "id,date,workout_sets(id,exercise_id,set_number,set_type,weight,reps,segments,rpe,notes,created_at,exercises(name,body_part))";
 
 function groupSetsByExercise(sets) {
   const groups = new Map();
@@ -172,7 +172,19 @@ export default function HistoryDetail() {
                         className="flex items-center justify-between rounded-lg bg-bg-secondary px-4 py-3"
                         key={set.id}
                       >
-                        <span className="text-sm text-text-secondary">第 {set.set_number} 组</span>
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm text-text-secondary">第 {set.set_number} 组</span>
+                          {set.rpe && (
+                            <span className="rpe-badge-sm">RPE {set.rpe}</span>
+                          )}
+                          {set.notes && (
+                            <span className="note-badge" title={set.notes}>
+                              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                              </svg>
+                            </span>
+                          )}
+                        </div>
                         {set.set_type === "drop_set" ? (
                           <span className="font-semibold text-text-primary">
                             {set.segments?.map((segment, index) => (

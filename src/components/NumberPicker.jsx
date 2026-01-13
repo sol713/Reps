@@ -1,19 +1,21 @@
 import { hapticTick } from "../lib/haptics.js";
+import { clamp } from "../lib/math.js";
 
-function clamp(value, min, max) {
-  return Math.min(Math.max(value, min), max);
-}
-
-export default function WeightPicker({
+export default function NumberPicker({
+  label,
   value = 0,
   onChange = () => {},
-  unit = "kg",
-  step = 2.5,
-  min = 5,
-  max = 50
+  unit,
+  step = 1,
+  min = 0,
+  max = 100,
+  precision = 0
 }) {
   const handleAdjust = (nextValue) => {
-    const adjusted = clamp(Number(nextValue.toFixed(2)), min, max);
+    const rounded = precision > 0 
+      ? Number(nextValue.toFixed(precision)) 
+      : Math.round(nextValue);
+    const adjusted = clamp(rounded, min, max);
     if (adjusted !== value) {
       hapticTick();
     }
@@ -24,7 +26,7 @@ export default function WeightPicker({
     <div className="card flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium text-text-secondary">
-          重量
+          {label}
         </span>
         <div className="flex items-baseline gap-1">
           <span className="text-2xl font-bold tabular-nums text-text-primary">
@@ -37,7 +39,7 @@ export default function WeightPicker({
         <button
           className="flex h-12 w-12 items-center justify-center rounded-full bg-bg-secondary text-xl font-semibold text-primary transition-all active:scale-90 active:bg-bg-tertiary"
           type="button"
-          aria-label="减少重量"
+          aria-label={`减少${label}`}
           onClick={() => handleAdjust(value - step)}
         >
           −
@@ -54,7 +56,7 @@ export default function WeightPicker({
         <button
           className="flex h-12 w-12 items-center justify-center rounded-full bg-bg-secondary text-xl font-semibold text-primary transition-all active:scale-90 active:bg-bg-tertiary"
           type="button"
-          aria-label="增加重量"
+          aria-label={`增加${label}`}
           onClick={() => handleAdjust(value + step)}
         >
           +

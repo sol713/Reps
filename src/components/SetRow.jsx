@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
+import { RPEBadge } from "./RPESelector.jsx";
+import { NoteBadge } from "./SetNoteInput.jsx";
 
-export default function SetRow({ set, onDelete = () => {}, onEdit = () => {} }) {
+export default function SetRow({ set, onDelete = () => {}, onEdit = () => {}, onViewNote = () => {} }) {
   const startX = useRef(0);
   const [offset, setOffset] = useState(0);
   const [showDelete, setShowDelete] = useState(false);
@@ -92,6 +94,16 @@ export default function SetRow({ set, onDelete = () => {}, onEdit = () => {} }) 
           >
             编辑
           </button>
+          {set.rpe && <RPEBadge rpe={set.rpe} size="sm" />}
+          {set.notes && (
+            <NoteBadge
+              note={set.notes}
+              onClick={(event) => {
+                event.stopPropagation();
+                onViewNote(set);
+              }}
+            />
+          )}
           <span className="flex h-6 w-6 items-center justify-center rounded-full bg-success/15 text-sm text-success">
             ✓
           </span>

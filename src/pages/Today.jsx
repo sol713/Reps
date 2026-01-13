@@ -9,13 +9,15 @@ import OnboardingModal from "../components/OnboardingModal.jsx";
 import PRCelebrationModal from "../components/PRCelebrationModal.jsx";
 import QuickActions from "../components/QuickActions.jsx";
 import QuickRecordPanel from "../components/QuickRecordPanel.jsx";
-import RepsPicker from "../components/RepsPicker.jsx";
+import NumberPicker from "../components/NumberPicker.jsx";
 import RestTimer from "../components/RestTimer.jsx";
+import RPESelector from "../components/RPESelector.jsx";
 import SetCompleteAnimation from "../components/SetCompleteAnimation.jsx";
+import SetNoteInput from "../components/SetNoteInput.jsx";
 import SetRow from "../components/SetRow.jsx";
 import StreakBadge from "../components/StreakBadge.jsx";
 import UndoToast from "../components/UndoToast.jsx";
-import WeightPicker from "../components/WeightPicker.jsx";
+
 import WorkoutSummaryCard from "../components/WorkoutSummaryCard.jsx";
 import { bodyParts } from "../data/bodyParts.js";
 import { formatDate, getTodayIsoDate, getYesterdayIsoDate } from "../lib/date.js";
@@ -85,10 +87,15 @@ export default function Today() {
   const [editWeight, setEditWeight] = useState(WEIGHT_MIN);
   const [editReps, setEditReps] = useState(REPS_MIN);
   const [editSegments, setEditSegments] = useState([]);
+  const [editRpe, setEditRpe] = useState(null);
+  const [editNotes, setEditNotes] = useState("");
   const [editError, setEditError] = useState("");
   const [editLoading, setEditLoading] = useState(false);
   const [activeTemplate, setActiveTemplate] = useState(null);
   const [templateExerciseIndex, setTemplateExerciseIndex] = useState(0);
+  const [rpe, setRpe] = useState(null);
+  const [setNotes, setSetNotes] = useState("");
+  const [viewingNote, setViewingNote] = useState(null);
   const deleteTimersRef = useRef(new Map());
 
   const {
@@ -282,11 +289,15 @@ export default function Today() {
         set_type: "normal",
         weight: safeWeight,
         reps: safeReps,
-        rest_seconds: restDuration
+        rest_seconds: restDuration,
+        rpe: rpe,
+        notes: setNotes.trim() || null
       });
       if (!result) {
         return;
       }
+      setRpe(null);
+      setSetNotes("");
       setShowComplete(true);
       const pr = await checkForPR({
         exerciseId: result.exercise_id,
@@ -312,11 +323,15 @@ export default function Today() {
       const result = await addSet(currentExercise, {
         set_type: "drop_set",
         segments: normalizedSegments,
-        rest_seconds: restDuration
+        rest_seconds: restDuration,
+        rpe: rpe,
+        notes: setNotes.trim() || null
       });
       if (!result) {
         return;
       }
+      setRpe(null);
+      setSetNotes("");
       setShowComplete(true);
     }
   };
@@ -356,6 +371,8 @@ export default function Today() {
     setEditError("");
     setEditLoading(false);
     setEditingSet(set);
+    setEditRpe(set.rpe ?? null);
+    setEditNotes(set.notes ?? "");
     if (set.set_type === "drop_set") {
       const nextSegments = (set.segments ?? []).map((segment) => ({
         weight: clampWeight(segment.weight),
@@ -406,7 +423,9 @@ export default function Today() {
       setEditSegments(normalizedSegments);
       const updated = await updateSet(editingSet.id, {
         set_type: "drop_set",
-        segments: normalizedSegments
+        segments: normalizedSegments,
+        rpe: editRpe,
+        notes: editNotes.trim() || null
       });
 
       if (!updated) {
@@ -422,7 +441,9 @@ export default function Today() {
       const updated = await updateSet(editingSet.id, {
         set_type: "normal",
         weight: safeWeight,
-        reps: safeReps
+        reps: safeReps,
+        rpe: editRpe,
+        notes: editNotes.trim() || null
       });
 
       if (!updated) {
@@ -567,13 +588,25 @@ export default function Today() {
           />
 
           <div className="grid gap-3 md:grid-cols-2">
-            <WeightPicker
+            <NumberPicker
+              label="重量"
               value={weight}
               min={WEIGHT_MIN}
               max={WEIGHT_MAX}
+              step={2.5}
+              precision={2}
+              unit="kg"
               onChange={setWeight}
             />
-            <RepsPicker value={reps} min={REPS_MIN} max={REPS_MAX} onChange={setReps} />
+            <NumberPicker
+              label="次数"
+              value={reps}
+              min={REPS_MIN}
+              max={REPS_MAX}
+              step={1}
+              unit="次"
+              onChange={setReps}
+            />
           </div>
 
           <div className="flex gap-2">
@@ -622,6 +655,10 @@ export default function Today() {
               }
             />
           )}
+
+          <RPESelector value={rpe} onChange={setRpe} />
+
+          <SetNoteInput value={setNotes} onChange={setSetNotes} />
 
           <button
             className="btn btn-primary w-full text-base"
@@ -676,6 +713,7 @@ export default function Today() {
                     set={set}
                     onDelete={handleDeleteSet}
                     onEdit={handleEditOpen}
+                    onViewNote={(s) => setViewingNote(s)}
                   />
                 ))}
               </div>
@@ -811,20 +849,31 @@ export default function Today() {
             />
           ) : (
             <div className="grid gap-3 md:grid-cols-2">
-              <WeightPicker
+              <NumberPicker
+                label="重量"
                 value={editWeight}
                 min={WEIGHT_MIN}
                 max={WEIGHT_MAX}
+                step={2.5}
+                precision={2}
+                unit="kg"
                 onChange={setEditWeight}
               />
-              <RepsPicker
+              <NumberPicker
+                label="次数"
                 value={editReps}
                 min={REPS_MIN}
                 max={REPS_MAX}
+                step={1}
+                unit="次"
                 onChange={setEditReps}
               />
             </div>
           )}
+
+          <RPESelector value={editRpe} onChange={setEditRpe} compact />
+
+          <SetNoteInput value={editNotes} onChange={setEditNotes} compact />
 
           {editError && <p className="text-sm text-danger">{editError}</p>}
 
@@ -835,6 +884,30 @@ export default function Today() {
             onClick={handleEditSave}
           >
             {editLoading ? "保存中..." : "保存修改"}
+          </button>
+        </div>
+      </Modal>
+
+      <Modal isOpen={Boolean(viewingNote)} onClose={() => setViewingNote(null)}>
+        <div className="space-y-4">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">
+              训练笔记
+            </p>
+            <h3 className="text-lg font-bold text-text-primary">
+              {viewingNote?.exercise_name ?? "当前动作"}
+            </h3>
+            <p className="text-sm text-text-secondary">第 {viewingNote?.set_number} 组</p>
+          </div>
+          <div className="rounded-lg bg-bg-secondary p-4">
+            <p className="text-text-primary whitespace-pre-wrap">{viewingNote?.notes}</p>
+          </div>
+          <button
+            className="btn btn-secondary w-full"
+            type="button"
+            onClick={() => setViewingNote(null)}
+          >
+            关闭
           </button>
         </div>
       </Modal>

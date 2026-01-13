@@ -1058,3 +1058,173 @@ input[type="range"]::-moz-range-thumb {
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
+
+/* ========================================
+   RPE SELECTOR
+   ======================================== */
+
+.rpe-selector {
+  padding: var(--space-md);
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+}
+
+.rpe-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-primary);
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.rpe-chip:active {
+  transform: scale(0.95);
+}
+
+.rpe-chip-selected {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #FFFFFF;
+}
+
+.rpe-chip-high.rpe-chip-selected {
+  background: linear-gradient(135deg, #FF6B35, #FF453A);
+  border-color: #FF6B35;
+}
+
+/* RPE Badge */
+.rpe-badge-sm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+}
+
+.rpe-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+}
+
+.rpe-badge-high {
+  background: linear-gradient(135deg, #FF6B35, #FF453A);
+}
+
+/* ========================================
+   NOTE INPUT
+   ======================================== */
+
+.note-input-collapsed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background-color: var(--bg-secondary);
+  border: 1px dashed var(--border-primary);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.note-input-collapsed:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.note-input-collapsed:active {
+  transform: scale(0.98);
+}
+
+.note-input-expanded {
+  padding: var(--space-md);
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+}
+
+.note-input {
+  position: relative;
+}
+
+.note-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 12px;
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  resize: none;
+  transition: border-color var(--transition-fast);
+}
+
+.note-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.note-textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+.note-char-count {
+  margin-top: 4px;
+  font-size: 12px;
+  text-align: right;
+  color: var(--text-tertiary);
+}
+
+.note-char-count-warning {
+  color: var(--color-warning);
+}
+
+/* Note Badge */
+.note-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.note-badge:hover {
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+}
+
+.note-badge:active {
+  transform: scale(0.9);
+}
