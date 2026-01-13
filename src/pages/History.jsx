@@ -1,13 +1,7 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { bodyParts } from "../data/bodyParts.js";
 import { formatDate, formatWeekday } from "../lib/date.js";
-import { normalizeSets } from "../lib/sets.js";
-import { supabase } from "../lib/supabase.js";
-import { useAuth } from "../hooks/useAuth.jsx";
-
-const LOG_SELECT =
-  "id,date,workout_sets(id,exercise_id,set_number,set_type,weight,reps,segments,created_at,exercises(name,body_part))";
+import { useHistory } from "../hooks/useHistory.js";
 
 function buildSummary(log) {
   const sets = log.sets ?? [];
@@ -27,59 +21,8 @@ function buildSummary(log) {
 }
 
 export default function History() {
-  const { user } = useAuth();
-  const [workoutLogs, setWorkoutLogs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const { logs, loading, error } = useHistory();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    let isActive = true;
-
-    const loadLogs = async () => {
-      if (!user) {
-        setWorkoutLogs([]);
-        setLoading(false);
-        return;
-      }
-
-      setLoading(true);
-      setError("");
-
-      const { data, error: fetchError } = await supabase
-        .from("workout_logs")
-        .select(LOG_SELECT)
-        .order("date", { ascending: false });
-
-      if (!isActive) {
-        return;
-      }
-
-      if (fetchError) {
-        setError(fetchError.message);
-        setWorkoutLogs([]);
-        setLoading(false);
-        return;
-      }
-
-      const logs = (data ?? [])
-        .map((log) => ({
-          id: log.id,
-          date: log.date,
-          sets: normalizeSets(log.workout_sets ?? [])
-        }))
-        .filter((log) => log.sets.length > 0);
-
-      setWorkoutLogs(logs);
-      setLoading(false);
-    };
-
-    loadLogs();
-
-    return () => {
-      isActive = false;
-    };
-  }, [user]);
 
   return (
     <div className="mx-auto flex min-h-screen max-w-xl flex-col gap-6 px-4 pb-tab-bar pt-6">
@@ -98,7 +41,7 @@ export default function History() {
         <div className="card text-center">
           <p className="text-sm text-danger">{error}</p>
         </div>
-      ) : workoutLogs.length === 0 ? (
+      ) : logs.length === 0 ? (
         <div className="empty-state">
           <div className="empty-state-icon">📋</div>
           <p className="empty-state-title">还没有训练记录</p>
@@ -113,7 +56,7 @@ export default function History() {
         </div>
       ) : (
         <div className="space-y-3">
-          {workoutLogs.map((log, index) => {
+          {logs.map((log, index) => {
             const summary = buildSummary(log);
             return (
               <button

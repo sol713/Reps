@@ -23,6 +23,7 @@ import { bodyParts } from "../data/bodyParts.js";
 import { formatDate, getTodayIsoDate, getYesterdayIsoDate } from "../lib/date.js";
 import { hapticFeedback } from "../lib/haptics.js";
 import { normalizeSets } from "../lib/sets.js";
+import { clamp } from "../lib/math.js";
 import { calculateWorkoutStats } from "../lib/stats.js";
 import { supabase } from "../lib/supabase.js";
 import { useAuth } from "../hooks/useAuth.jsx";
@@ -51,16 +52,12 @@ const WEIGHT_MAX = 50;
 const REPS_MIN = 5;
 const REPS_MAX = 30;
 
-function clampValue(value, min, max) {
-  return Math.min(Math.max(value, min), max);
-}
-
 function clampWeight(value) {
-  return clampValue(Number(value ?? WEIGHT_MIN), WEIGHT_MIN, WEIGHT_MAX);
+  return clamp(Number(value ?? WEIGHT_MIN), WEIGHT_MIN, WEIGHT_MAX);
 }
 
 function clampReps(value) {
-  return clampValue(Number(value ?? REPS_MIN), REPS_MIN, REPS_MAX);
+  return clamp(Number(value ?? REPS_MIN), REPS_MIN, REPS_MAX);
 }
 
 export default function Today() {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { bodyParts } from "../data/bodyParts.js";
+import { calculateVolume } from "../lib/stats.js";
 import { supabase } from "../lib/supabase.js";
 import { useAuth } from "./useAuth.jsx";
 
@@ -64,13 +65,7 @@ export function useStats(days = 7) {
           const trendData = trendMap.get(log.date);
 
           sets.forEach((set) => {
-            const volume =
-              set.set_type === "drop_set"
-                ? (set.segments || []).reduce(
-                    (sum, seg) => sum + (seg.weight || 0) * (seg.reps || 0),
-                    0
-                  )
-                : (set.weight || 0) * (set.reps || 0);
+            const volume = calculateVolume([set]);
 
             const reps =
               set.set_type === "drop_set"
