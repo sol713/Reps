@@ -15,7 +15,7 @@ import Settings from "./pages/Settings.jsx";
 import Stats from "./pages/Stats.jsx";
 import TemplateDetail from "./pages/TemplateDetail.jsx";
 import Templates from "./pages/Templates.jsx";
-import Today from "./pages/Today.jsx";
+import Today from "./pages/Today/index.jsx";
 
 function AppRoutes() {
   const { loading, isAuthenticated } = useAuth();
