@@ -18,6 +18,7 @@ import SetRow from "../components/SetRow.jsx";
 import SmartStartCard from "../components/SmartStartCard.jsx";
 import StreakBadge from "../components/StreakBadge.jsx";
 import UndoToast from "../components/UndoToast.jsx";
+import WeeklyGoalCard from "../components/WeeklyGoalCard.jsx";
 
 import WorkoutSummaryCard from "../components/WorkoutSummaryCard.jsx";
 import { bodyParts } from "../data/bodyParts.js";
@@ -368,6 +369,44 @@ export default function Today() {
     }
   };
 
+  const handleQuickRecord = async (quickWeight, quickReps) => {
+    if (!currentExercise || workoutLoading) {
+      return;
+    }
+    
+    const safeWeight = clampWeight(quickWeight);
+    const safeReps = clampReps(quickReps);
+    
+    setIsResting(true);
+    setRestKey(Date.now());
+    
+    const result = await addSet(currentExercise, {
+      set_type: "normal",
+      weight: safeWeight,
+      reps: safeReps,
+      rest_seconds: restDuration
+    });
+    
+    if (!result) {
+      return;
+    }
+    
+    setWeight(safeWeight);
+    setReps(safeReps);
+    setShowComplete(true);
+    
+    const pr = await checkForPR({
+      exerciseId: result.exercise_id,
+      weight: result.weight,
+      setId: result.id,
+      exerciseName: result.exercise_name
+    });
+    
+    if (pr) {
+      setSessionPRs((prev) => [pr, ...prev]);
+    }
+  };
+
   const handleNextTemplateExercise = () => {
     if (!activeTemplate?.exercises) return;
     
@@ -557,6 +596,8 @@ export default function Today() {
         )}
       </header>
 
+      <WeeklyGoalCard targetDays={6} />
+
       <QuickActions />
 
       {!todayLog && !smartLoading && suggestedPart && (
@@ -627,6 +668,7 @@ export default function Today() {
               setWeight(clampWeight(w));
               setReps(clampReps(r));
             }}
+            onQuickRecord={handleQuickRecord}
           />
 
           <div className="grid gap-3 md:grid-cols-2">

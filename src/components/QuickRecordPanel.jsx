@@ -7,6 +7,7 @@ export default function QuickRecordPanel({
   currentWeight,
   currentReps,
   onApply,
+  onQuickRecord,
   settings = {}
 }) {
   const suggestion = useMemo(
@@ -30,6 +31,13 @@ export default function QuickRecordPanel({
     onApply(weight, reps);
   };
 
+  const handleQuickRecord = (weight, reps) => {
+    hapticFeedback("success");
+    if (onQuickRecord) {
+      onQuickRecord(weight, reps);
+    }
+  };
+
   const isCurrentSameAsLast =
     lastSet &&
     lastSet.set_type === "normal" &&
@@ -43,48 +51,70 @@ export default function QuickRecordPanel({
 
   return (
     <div className="space-y-2">
-      {lastSet && lastSet.set_type === "normal" && !isCurrentSameAsLast && (
-        <button
-          className="flex w-full items-center justify-between rounded-xl bg-bg-secondary p-3 text-left transition-all active:scale-[0.98]"
-          type="button"
-          onClick={() => handleQuickApply(lastSet.weight, lastSet.reps)}
-        >
-          <div className="flex items-center gap-3">
+      {lastSet && lastSet.set_type === "normal" && (
+        <div className="flex gap-2">
+          <button
+            className="flex flex-1 items-center gap-3 rounded-xl bg-bg-secondary p-3 text-left transition-all active:scale-[0.98]"
+            type="button"
+            onClick={() => handleQuickApply(lastSet.weight, lastSet.reps)}
+          >
             <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-bg-tertiary text-lg">
               🔄
             </span>
-            <div>
+            <div className="min-w-0 flex-1">
               <p className="text-sm font-medium text-text-primary">
-                复制上次: {lastSet.weight}kg × {lastSet.reps}
+                {lastSet.weight}kg × {lastSet.reps}
               </p>
-              <p className="text-xs text-text-tertiary">一键使用上次数据</p>
+              <p className="text-xs text-text-tertiary">上次数据</p>
             </div>
-          </div>
-          <span className="text-primary">应用</span>
-        </button>
+          </button>
+          {onQuickRecord && (
+            <button
+              className="flex items-center justify-center rounded-xl bg-primary px-4 text-white transition-all active:scale-[0.98]"
+              type="button"
+              onClick={() => handleQuickRecord(lastSet.weight, lastSet.reps)}
+            >
+              <div className="text-center">
+                <p className="text-lg font-bold">✓</p>
+                <p className="text-[10px]">记录</p>
+              </div>
+            </button>
+          )}
+        </div>
       )}
 
       {suggestion && suggestionMessage && !isCurrentSameAsSuggestion && (
-        <button
-          className="flex w-full items-center justify-between rounded-xl border border-primary/20 bg-primary/5 p-3 text-left transition-all active:scale-[0.98]"
-          type="button"
-          onClick={() =>
-            handleQuickApply(suggestion.suggestedWeight, suggestion.suggestedReps)
-          }
-        >
-          <div className="flex items-center gap-3">
+        <div className="flex gap-2">
+          <button
+            className="flex flex-1 items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 p-3 text-left transition-all active:scale-[0.98]"
+            type="button"
+            onClick={() =>
+              handleQuickApply(suggestion.suggestedWeight, suggestion.suggestedReps)
+            }
+          >
             <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-lg">
               {suggestionMessage.icon}
             </span>
-            <div>
+            <div className="min-w-0 flex-1">
               <p className="text-sm font-medium text-text-primary">
-                建议: {suggestionMessage.primary}
+                {suggestionMessage.primary}
               </p>
               <p className="text-xs text-text-secondary">{suggestionMessage.secondary}</p>
             </div>
-          </div>
-          <span className="text-primary">应用</span>
-        </button>
+          </button>
+          {onQuickRecord && (
+            <button
+              className="flex items-center justify-center rounded-xl bg-primary/10 px-4 text-primary transition-all active:scale-[0.98]"
+              type="button"
+              onClick={() => handleQuickRecord(suggestion.suggestedWeight, suggestion.suggestedReps)}
+            >
+              <div className="text-center">
+                <p className="text-lg font-bold">✓</p>
+                <p className="text-[10px]">记录</p>
+              </div>
+            </button>
+          )}
+        </div>
       )}
 
       {suggestion?.stats && (

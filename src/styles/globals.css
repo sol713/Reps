@@ -1312,3 +1312,121 @@ input[type="range"]::-moz-range-thumb {
 .smart-start-btn-alt:hover {
   background-color: rgba(255, 255, 255, 0.3);
 }
+
+.weekly-goal-card {
+  background-color: var(--bg-elevated);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-primary);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.weekly-goal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-sm);
+}
+
+.weekly-goal-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.weekly-goal-progress {
+  margin-top: 2px;
+}
+
+.weekly-goal-current {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.weekly-goal-divider {
+  font-size: 18px;
+  color: var(--text-tertiary);
+  margin: 0 2px;
+}
+
+.weekly-goal-target {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.weekly-goal-status {
+  text-align: right;
+}
+
+.weekly-goal-complete {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-success);
+}
+
+.weekly-goal-remaining {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.weekly-goal-bar {
+  height: 6px;
+  background-color: var(--bg-tertiary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: var(--space-md);
+}
+
+.weekly-goal-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+  border-radius: var(--radius-full);
+  transition: width 0.5s ease;
+}
+
+.weekly-goal-days {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.weekly-goal-day {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 0;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-secondary);
+  transition: all var(--transition-fast);
+}
+
+.weekly-goal-day.completed {
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+}
+
+.weekly-goal-day.today:not(.completed) {
+  border: 2px solid var(--color-primary);
+  background-color: var(--color-primary-light);
+  background-color: rgba(10, 132, 255, 0.1);
+}
+
+.weekly-goal-day-label {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.weekly-goal-day.completed .weekly-goal-day-label {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.weekly-goal-day-check {
+  font-size: 12px;
+  font-weight: 700;
+}
