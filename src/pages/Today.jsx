@@ -605,9 +605,9 @@ export default function Today() {
             <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">
               {activeTemplate ? activeTemplate.name : "今日训练"}
             </p>
-            <h1 className="text-2xl font-bold text-text-primary">{formatDate(today)}</h1>
+            <h1 className="text-3xl font-bold text-text-primary tracking-tight">{formatDate(today)}</h1>
             {todayLog?.startedAt && (
-              <p className="text-sm text-text-secondary">
+              <p className="text-sm font-medium text-text-secondary mt-1">
                 已训练 {getWorkoutDuration() ?? 0} 分钟
               </p>
             )}
@@ -615,33 +615,32 @@ export default function Today() {
           <StreakBadge streak={streak} />
         </div>
         {activeTemplate && (
-          <div className="mt-3 flex items-center gap-2">
-            <div
-              className="h-2 flex-1 overflow-hidden rounded-full bg-bg-tertiary"
-            >
+          <div className="mt-4 flex items-center gap-3">
+            <div className="progress-bar flex-1">
               <div
-                className="h-full rounded-full bg-primary transition-all"
+                className="progress-bar-fill"
                 style={{
                   width: `${((templateExerciseIndex + 1) / activeTemplate.exercises.length) * 100}%`
                 }}
               />
             </div>
-            <span className="text-xs text-text-secondary">
+            <span className="text-xs font-medium text-text-secondary">
               {templateExerciseIndex + 1}/{activeTemplate.exercises.length}
             </span>
           </div>
         )}
         {!activeTemplate && exerciseQueue.length > 1 && (
-          <div className="mt-3 flex items-center gap-2">
-            <div className="h-2 flex-1 overflow-hidden rounded-full bg-bg-tertiary">
+          <div className="mt-4 flex items-center gap-3">
+            <div className="progress-bar flex-1">
               <div
-                className="h-full rounded-full bg-success transition-all"
+                className="progress-bar-fill"
                 style={{
-                  width: `${((queueIndex + 1) / exerciseQueue.length) * 100}%`
+                  width: `${((queueIndex + 1) / exerciseQueue.length) * 100}%`,
+                  background: 'var(--gradient-success)'
                 }}
               />
             </div>
-            <span className="text-xs text-text-secondary">
+            <span className="text-xs font-medium text-text-secondary">
               {queueIndex + 1}/{exerciseQueue.length}
             </span>
           </div>
@@ -663,47 +662,53 @@ export default function Today() {
       )}
 
       <button
-        className="card card-interactive flex items-center justify-between"
+        className="card card-interactive group flex items-center justify-between p-5"
         type="button"
         onClick={() => setShowExercisePicker(true)}
       >
         <div>
-          <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">选择动作</p>
-          <p className="mt-1 text-lg font-bold text-text-primary">
+          <p className="text-xs font-bold uppercase tracking-widest text-text-tertiary group-hover:text-primary transition-colors">选择动作</p>
+          <p className="mt-1 text-xl font-bold text-text-primary group-hover:text-gradient transition-all">
             {currentExercise?.name ?? "点击选择动作"}
           </p>
         </div>
-        <span className="badge">搜索</span>
+        <span className="chip group-hover:bg-primary/10 group-hover:text-primary transition-all">
+           🔍 搜索
+        </span>
       </button>
 
       {currentExercise && (
-        <section className="animate-fade-in card space-y-4">
+        <section className="animate-fade-in card space-y-5 border-t-4 border-t-primary/20">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">
+              <p className="text-xs font-bold uppercase tracking-widest text-text-secondary">
                 当前动作
               </p>
-              <h2 className="text-lg font-bold text-text-primary">{currentExercise.name}</h2>
+              <h2 className="text-2xl font-bold text-text-primary mt-1">{currentExercise.name}</h2>
             </div>
           </div>
 
           <button
-            className="flex w-full items-center gap-2 rounded-md bg-bg-secondary px-4 py-3 text-left text-sm text-text-secondary transition-colors active:bg-bg-tertiary"
+            className="flex w-full items-center gap-3 rounded-xl bg-bg-tertiary/50 border border-border-primary px-4 py-3 text-left text-sm text-text-secondary transition-all hover:bg-bg-tertiary active:scale-[0.98]"
             type="button"
             onClick={() => navigate("/history")}
           >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {historyLoading
-              ? "历史加载中..."
-              : lastRecord
-                ? lastRecord.set_type === "drop_set"
-                  ? `上次：${lastRecord.segments
-                    ?.map((segment) => `${segment.weight}kg×${segment.reps}`)
-                    .join(" → ")}`
-                  : `上次：${lastRecord.weight ?? ""}kg × ${lastRecord.reps ?? ""}`
-                : "暂无历史记录"}
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-bg-secondary text-primary">
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <span className="font-medium">
+              {historyLoading
+                ? "历史加载中..."
+                : lastRecord
+                  ? lastRecord.set_type === "drop_set"
+                    ? `上次：${lastRecord.segments
+                      ?.map((segment) => `${segment.weight}kg×${segment.reps}`)
+                      .join(" → ")}`
+                    : `上次：${lastRecord.weight ?? ""}kg × ${lastRecord.reps ?? ""}`
+                  : "暂无历史记录"}
+            </span>
           </button>
 
           <QuickRecordPanel
@@ -717,7 +722,7 @@ export default function Today() {
             onQuickRecord={handleQuickRecord}
           />
 
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="rounded-2xl bg-bg-tertiary/30 p-4 border border-border-primary grid gap-4 md:grid-cols-2">
             <NumberPicker
               label="重量"
               value={weight}
@@ -739,7 +744,7 @@ export default function Today() {
             />
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 rounded-xl bg-bg-tertiary/50 p-1">
             {[
               { key: "normal", label: "普通组" },
               { key: "drop_set", label: "递减组" }
@@ -747,7 +752,11 @@ export default function Today() {
               const isActive = setType === item.key;
               return (
                 <button
-                  className={`chip flex-1 ${isActive ? "chip-selected" : ""}`}
+                  className={`flex-1 rounded-lg py-2 text-sm font-bold transition-all ${
+                    isActive 
+                      ? "bg-white text-primary shadow-sm dark:bg-bg-secondary" 
+                      : "text-text-tertiary hover:text-text-secondary"
+                  }`}
                   key={item.key}
                   type="button"
                   onClick={() => setSetType(item.key)}
@@ -797,7 +806,7 @@ export default function Today() {
           />
 
           <button
-            className="btn btn-primary w-full text-base"
+            className="btn btn-primary w-full text-lg shadow-glow h-12"
             type="button"
             disabled={workoutLoading}
             onClick={handleRecordSet}
@@ -825,10 +834,10 @@ export default function Today() {
         </section>
       )}
 
-      <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 className="font-bold text-text-primary">已完成</h3>
-          <span className="badge badge-success">{sets.length} 组</span>
+      <section className="space-y-4">
+        <div className="flex items-center justify-between px-1">
+          <h3 className="font-bold text-lg text-text-primary">已完成</h3>
+          <span className="chip bg-success/10 text-success border border-success/20 font-bold">{sets.length} 组</span>
         </div>
         {workoutLoading ? (
           <div className="empty-state">
@@ -839,7 +848,7 @@ export default function Today() {
             <p className="text-sm text-danger">{workoutError}</p>
           </div>
         ) : todayGroups.length === 0 ? (
-          <div className="card text-center">
+          <div className="card text-center p-8">
             <p className="text-sm text-text-secondary">还没有记录，开始你的第一组训练吧！</p>
           </div>
         ) : (
@@ -848,7 +857,7 @@ export default function Today() {
             return (
               <div className="animate-fade-in" key={group.exerciseId}>
                 <button
-                  className="flex w-full items-center justify-between rounded-lg bg-bg-secondary px-3 py-2.5 text-left transition-colors active:bg-bg-tertiary"
+                  className="card card-interactive mb-2 flex w-full items-center justify-between p-4"
                   type="button"
                   onClick={() => {
                     if (isCurrentExercise) {
@@ -861,23 +870,25 @@ export default function Today() {
                     }
                   }}
                 >
-                  <div className="flex items-center gap-2">
-                    <svg
-                      className={`h-4 w-4 text-text-tertiary transition-transform ${isCurrentExercise ? "rotate-90" : ""}`}
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                    <span className="font-semibold text-text-primary">{group.exerciseName}</span>
+                  <div className="flex items-center gap-3">
+                    <div className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${isCurrentExercise ? "bg-primary text-white" : "bg-bg-tertiary text-text-tertiary"}`}>
+                      <svg
+                        className={`h-4 w-4 transition-transform ${isCurrentExercise ? "rotate-90" : ""}`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                    <span className={`font-bold ${isCurrentExercise ? "text-primary" : "text-text-primary"}`}>{group.exerciseName}</span>
                   </div>
-                  <span className="text-sm text-text-secondary">
+                  <span className="text-sm font-medium text-text-secondary bg-bg-tertiary px-2 py-1 rounded-md">
                     {group.sets.length} 组
                   </span>
                 </button>
                 {isCurrentExercise && (
-                  <div className="mt-2 space-y-2">
+                  <div className="mt-2 space-y-2 pl-4 border-l-2 border-primary/20 ml-4">
                     {group.sets.map((set) => (
                       <SetRow
                         key={set.id}
@@ -896,33 +907,35 @@ export default function Today() {
         )}
       </section>
 
-      <section className="card">
-        <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">
+      <section className="card relative overflow-hidden">
+        <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-gradient-to-br from-primary/20 to-transparent rounded-full blur-2xl pointer-events-none" />
+        
+        <p className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-4 relative z-10">
           今日总览
         </p>
-        <div className="mt-4 grid grid-cols-3 gap-3 text-center">
-          <div className="rounded-lg bg-bg-secondary px-3 py-4">
+        <div className="grid grid-cols-3 gap-4 text-center relative z-10">
+          <div className="rounded-2xl bg-bg-tertiary/40 border border-border-primary p-3 backdrop-blur-sm">
             <p className="text-xs font-medium text-text-secondary">部位</p>
-            <p className="mt-1 text-sm font-bold text-text-primary">{todaySummary.bodyLabel}</p>
+            <p className="mt-2 text-sm font-bold text-text-primary truncate">{todaySummary.bodyLabel}</p>
           </div>
-          <div className="rounded-lg bg-bg-secondary px-3 py-4">
+          <div className="rounded-2xl bg-bg-tertiary/40 border border-border-primary p-3 backdrop-blur-sm">
             <p className="text-xs font-medium text-text-secondary">动作</p>
-            <p className="mt-1 text-xl font-bold text-text-primary">{todaySummary.exerciseCount}</p>
+            <p className="mt-1 text-2xl font-black text-gradient">{todaySummary.exerciseCount}</p>
           </div>
-          <div className="rounded-lg bg-bg-secondary px-3 py-4">
+          <div className="rounded-2xl bg-bg-tertiary/40 border border-border-primary p-3 backdrop-blur-sm">
             <p className="text-xs font-medium text-text-secondary">组数</p>
-            <p className="mt-1 text-xl font-bold text-text-primary">{todaySummary.setCount}</p>
+            <p className="mt-1 text-2xl font-black text-gradient">{todaySummary.setCount}</p>
           </div>
         </div>
       </section>
 
       {sets.length > 0 && (
         <button
-          className="btn btn-primary w-full"
+          className="btn btn-primary w-full text-lg font-bold h-14 shadow-lg shadow-primary/30"
           type="button"
           onClick={handleFinishWorkout}
         >
-          训练完成
+          ✨ 训练完成
         </button>
       )}
 

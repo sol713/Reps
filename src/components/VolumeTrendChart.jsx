@@ -9,9 +9,9 @@ import {
 } from "recharts";
 
 const METRICS = {
-  volume: { label: "容量", color: "#0A84FF", unit: "kg" },
-  sets: { label: "组数", color: "#30D158", unit: "组" },
-  reps: { label: "次数", color: "#AF52DE", unit: "次" }
+  volume: { label: "容量", color: "#8b5cf6", unit: "kg" }, // Purple
+  sets: { label: "组数", color: "#10b981", unit: "组" },   // Emerald
+  reps: { label: "次数", color: "#d946ef", unit: "次" }    // Pink
 };
 
 export default function VolumeTrendChart({ data, period, metric, onPeriodChange, onMetricChange }) {
@@ -25,7 +25,7 @@ export default function VolumeTrendChart({ data, period, metric, onPeriodChange,
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="rounded-lg bg-bg-tertiary px-3 py-2 shadow-lg">
+        <div className="rounded-lg bg-bg-tertiary px-3 py-2 shadow-lg border border-border-primary backdrop-blur-md">
           <p className="text-xs text-text-secondary">{formatXAxis(payload[0].payload.date)}</p>
           <p className="text-sm font-bold text-text-primary">
             {payload[0].value} {currentMetric.unit}
@@ -87,7 +87,7 @@ export default function VolumeTrendChart({ data, period, metric, onPeriodChange,
             tick={{ fill: "var(--text-tertiary)", fontSize: 12 }}
             tickLine={false}
           />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip content={<CustomTooltip />} cursor={{ stroke: "var(--border-primary)" }} />
           <Line
             activeDot={{ r: 6, stroke: currentMetric.color, strokeWidth: 2 }}
             dataKey="value"

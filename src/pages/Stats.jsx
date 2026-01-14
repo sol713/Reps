@@ -40,14 +40,14 @@ export default function Stats() {
         <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">
           数据统计
         </p>
-        <h1 className="text-2xl font-bold text-text-primary">训练分析</h1>
+        <h1 className="text-3xl font-bold text-gradient">训练分析</h1>
       </header>
 
       {!hasData ? (
-        <div className="empty-state">
-          <div className="empty-state-icon">📊</div>
-          <p className="empty-state-title">暂无数据</p>
-          <p className="empty-state-description">开始训练吧!</p>
+        <div className="card flex flex-col items-center justify-center py-12 text-center">
+          <div className="mb-4 text-4xl">📊</div>
+          <p className="mb-2 text-lg font-bold text-text-primary">暂无数据</p>
+          <p className="text-text-secondary">开始训练吧!</p>
         </div>
       ) : (
         <>

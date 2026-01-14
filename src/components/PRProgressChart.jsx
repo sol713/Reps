@@ -9,13 +9,19 @@ import {
   YAxis
 } from "recharts";
 
-const EXERCISE_COLORS = ["#10B981", "#3B82F6", "#A855F7", "#F59E0B", "#EF4444"];
+const EXERCISE_COLORS = [
+  "#8b5cf6", // Purple (primary)
+  "#d946ef", // Pink
+  "#6366f1", // Indigo
+  "#10b981", // Emerald (success)
+  "#f59e0b", // Amber (warning)
+];
 
 export default function PRProgressChart({ data }) {
   if (!data || data.length === 0) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <p className="text-sm text-app-muted">暂无PR数据</p>
+        <p className="text-sm text-text-secondary">暂无PR数据</p>
       </div>
     );
   }
@@ -43,8 +49,8 @@ export default function PRProgressChart({ data }) {
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="rounded-lg border border-gray-700 bg-gray-800 p-2 shadow-xl">
-          <p className="text-xs text-gray-400">{formatXAxis(payload[0].payload.date)}</p>
+        <div className="rounded-lg bg-bg-tertiary px-3 py-2 shadow-lg border border-border-primary backdrop-blur-md">
+          <p className="text-xs text-text-secondary">{formatXAxis(payload[0].payload.date)}</p>
           {payload.map((entry, index) => (
             <p key={index} className="text-xs font-semibold" style={{ color: entry.color }}>
               {entry.name}: {entry.value}kg
@@ -58,25 +64,25 @@ export default function PRProgressChart({ data }) {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-semibold text-app-text">PR进步</h3>
+      <h3 className="text-sm font-semibold text-text-primary">PR进步</h3>
       <ResponsiveContainer height={250} width="100%">
         <LineChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
-          <CartesianGrid stroke="#E5E7EB" strokeDasharray="3 3" vertical={false} />
+          <CartesianGrid stroke="var(--border-primary)" strokeDasharray="3 3" vertical={false} />
           <XAxis
             axisLine={false}
             dataKey="date"
             dy={10}
-            tick={{ fill: "#9CA3AF", fontSize: 12 }}
+            tick={{ fill: "var(--text-tertiary)", fontSize: 12 }}
             tickFormatter={formatXAxis}
             tickLine={false}
           />
           <YAxis
             axisLine={false}
-            tick={{ fill: "#9CA3AF", fontSize: 12 }}
+            tick={{ fill: "var(--text-tertiary)", fontSize: 12 }}
             tickLine={false}
           />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend wrapperStyle={{ fontSize: "12px" }} />
+          <Tooltip content={<CustomTooltip />} cursor={{ stroke: "var(--border-primary)" }} />
+          <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "10px", color: "var(--text-secondary)" }} />
           {exercises.map((exercise, index) => (
             <Line
               key={exercise}
