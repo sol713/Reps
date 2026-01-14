@@ -155,16 +155,33 @@ body {
   overscroll-behavior-y: none;
 }
 
-/* Dark mode subtle gradient background */
 @media (prefers-color-scheme: dark) {
   body {
-    background: radial-gradient(circle at top left, #1e1b4b, #0f172a);
+    background: linear-gradient(
+      -45deg,
+      #0f172a,
+      #1e1b4b,
+      #312e81,
+      #1e1b4b,
+      #0f172a
+    );
+    background-size: 400% 400%;
     background-attachment: fixed;
+    animation: gradient-flow 15s ease infinite;
   }
 }
 .dark body {
-  background: radial-gradient(circle at top left, #1e1b4b, #0f172a);
+  background: linear-gradient(
+    -45deg,
+    #0f172a,
+    #1e1b4b,
+    #312e81,
+    #1e1b4b,
+    #0f172a
+  );
+  background-size: 400% 400%;
   background-attachment: fixed;
+  animation: gradient-flow 15s ease infinite;
 }
 
 #root {
@@ -457,6 +474,38 @@ body {
   100% { background-position: 200% 0; }
 }
 
+/* Dynamic flowing gradient background animation */
+@keyframes gradient-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 50% 100%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 0%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animated-gradient-bg {
+  background: linear-gradient(
+    -45deg,
+    #0f172a,
+    #1e1b4b,
+    #312e81,
+    #1e1b4b,
+    #0f172a
+  );
+  background-size: 400% 400%;
+  animation: gradient-flow 15s ease infinite;
+}
+
 @keyframes pop-in {
   0% { transform: scale(0.5); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
@@ -688,6 +737,31 @@ body {
 .animate-fade-in {
   animation: fade-in var(--transition-fast);
 }
+
+@keyframes slide-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-stagger {
+  opacity: 0;
+  animation: slide-fade-up 0.4s ease-out forwards;
+}
+
+.stagger-delay-1 { animation-delay: 0.05s; }
+.stagger-delay-2 { animation-delay: 0.1s; }
+.stagger-delay-3 { animation-delay: 0.15s; }
+.stagger-delay-4 { animation-delay: 0.2s; }
+.stagger-delay-5 { animation-delay: 0.25s; }
+.stagger-delay-6 { animation-delay: 0.3s; }
+.stagger-delay-7 { animation-delay: 0.35s; }
+.stagger-delay-8 { animation-delay: 0.4s; }
 
 /* ===== Tab Bar Bottom Padding ===== */
 .pb-tab-bar {

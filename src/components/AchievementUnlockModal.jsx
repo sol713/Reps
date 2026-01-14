@@ -1,6 +1,33 @@
 import { useEffect, useState } from "react";
+import confetti from "canvas-confetti";
 import { RARITY_CONFIG } from "../data/achievements.js";
 import { hapticFeedback } from "../lib/haptics.js";
+
+function fireAchievementConfetti(rarityColor) {
+  confetti({
+    particleCount: 100,
+    spread: 70,
+    origin: { y: 0.6 },
+    colors: [rarityColor, "#ffd700", "#ff6b6b", "#4ecdc4", "#a855f7"]
+  });
+
+  setTimeout(() => {
+    confetti({
+      particleCount: 50,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0, y: 0.65 },
+      colors: [rarityColor, "#ffd700", "#3b82f6"]
+    });
+    confetti({
+      particleCount: 50,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1, y: 0.65 },
+      colors: [rarityColor, "#ffd700", "#3b82f6"]
+    });
+  }, 250);
+}
 
 export default function AchievementUnlockModal({ achievement, isOpen, onClose }) {
   const [isVisible, setIsVisible] = useState(false);
@@ -11,6 +38,9 @@ export default function AchievementUnlockModal({ achievement, isOpen, onClose })
       setIsVisible(true);
       setShowConfetti(true);
       hapticFeedback("success");
+      
+      const rarity = RARITY_CONFIG[achievement.rarity];
+      fireAchievementConfetti(rarity.color);
 
       const confettiTimer = setTimeout(() => setShowConfetti(false), 3000);
       return () => clearTimeout(confettiTimer);
