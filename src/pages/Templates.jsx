@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTemplates } from "../hooks/useTemplates.js";
 
@@ -78,7 +79,8 @@ function TemplateCard({ template, onStart, onEdit, onDelete }) {
 
 export default function Templates() {
   const navigate = useNavigate();
-  const { templates, loading, error, deleteTemplate } = useTemplates();
+  const { templates, loading, error, deleteTemplate, importPresetTemplates } = useTemplates();
+  const [importing, setImporting] = useState(false);
 
   const handleStart = (template) => {
     navigate("/", { state: { template } });
@@ -92,6 +94,12 @@ export default function Templates() {
     if (window.confirm("确定要删除这个模板吗？")) {
       await deleteTemplate(templateId);
     }
+  };
+
+  const handleImportPresets = async () => {
+    setImporting(true);
+    await importPresetTemplates();
+    setImporting(false);
   };
 
   return (
@@ -131,13 +139,23 @@ export default function Templates() {
           <p className="empty-state-description">
             创建训练模板，让每次训练更高效
           </p>
-          <button
-            className="btn btn-primary mt-4"
-            type="button"
-            onClick={() => navigate("/templates/new")}
-          >
-            创建第一个模板
-          </button>
+          <div className="mt-4 flex flex-col gap-3">
+            <button
+              className="btn btn-primary"
+              type="button"
+              disabled={importing}
+              onClick={handleImportPresets}
+            >
+              {importing ? "导入中..." : "导入推荐模板"}
+            </button>
+            <button
+              className="btn btn-secondary"
+              type="button"
+              onClick={() => navigate("/templates/new")}
+            >
+              自己创建
+            </button>
+          </div>
         </div>
       )}
 

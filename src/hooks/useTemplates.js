@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "../lib/supabase.js";
 import { useAuth } from "./useAuth.jsx";
+import { presetTemplates } from "../data/presetTemplates.js";
 
 const TEMPLATE_SELECT = `
   id,
@@ -256,6 +257,81 @@ export function useTemplates() {
     });
   }, [getTemplate, createTemplate]);
 
+  const importPresetTemplates = useCallback(async () => {
+    if (!user) return { ok: false, count: 0 };
+
+    const { data: exercises } = await supabase
+      .from("exercises")
+      .select("id,name,body_part");
+
+    if (!exercises) return { ok: false, count: 0 };
+
+    const exerciseMap = new Map();
+    exercises.forEach((ex) => {
+      const key = `${ex.name}|${ex.body_part}`;
+      exerciseMap.set(key, ex.id);
+    });
+
+    let importedCount = 0;
+
+    for (const preset of presetTemplates) {
+      const mappedExercises = [];
+      const missingExercises = [];
+
+      for (const ex of preset.exercises) {
+        const key = `${ex.name}|${ex.bodyPart}`;
+        const exerciseId = exerciseMap.get(key);
+        
+        if (exerciseId) {
+          mappedExercises.push({
+            exerciseId,
+            targetSets: ex.targetSets,
+            targetRepsMin: ex.targetRepsMin,
+            targetRepsMax: ex.targetRepsMax
+          });
+        } else {
+          missingExercises.push(ex);
+        }
+      }
+
+      for (const missing of missingExercises) {
+        const { data: newEx } = await supabase
+          .from("exercises")
+          .insert({
+            name: missing.name,
+            body_part: missing.bodyPart,
+            is_preset: false,
+            user_id: user.id
+          })
+          .select("id")
+          .single();
+
+        if (newEx) {
+          const key = `${missing.name}|${missing.bodyPart}`;
+          exerciseMap.set(key, newEx.id);
+          mappedExercises.push({
+            exerciseId: newEx.id,
+            targetSets: missing.targetSets,
+            targetRepsMin: missing.targetRepsMin,
+            targetRepsMax: missing.targetRepsMax
+          });
+        }
+      }
+
+      if (mappedExercises.length > 0) {
+        const result = await createTemplate({
+          name: preset.name,
+          description: preset.description,
+          color: preset.color,
+          exercises: mappedExercises
+        });
+        if (result) importedCount++;
+      }
+    }
+
+    return { ok: true, count: importedCount };
+  }, [user, createTemplate]);
+
   return {
     templates,
     loading,
@@ -266,6 +342,7 @@ export function useTemplates() {
     updateTemplate,
     deleteTemplate,
     archiveTemplate,
-    duplicateTemplate
+    duplicateTemplate,
+    importPresetTemplates
   };
 }
