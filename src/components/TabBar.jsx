@@ -116,11 +116,11 @@ export default function TabBar() {
             key={tab.path}
             to={tab.path}
             className={`tab-bar-item ${active ? "tab-bar-item-active" : ""}`}
+            aria-label={tab.label}
           >
             <span className="tab-bar-icon">
               {active ? tab.iconActive : tab.icon}
             </span>
-            <span className="tab-bar-label">{tab.label}</span>
           </NavLink>
         );
       })}

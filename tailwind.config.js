@@ -36,7 +36,7 @@ export default {
         xl: "var(--space-xl)",
         "2xl": "var(--space-2xl)",
         "safe-bottom": "env(safe-area-inset-bottom)",
-        "tab-bar": "calc(56px + env(safe-area-inset-bottom))",
+        "tab-bar": "calc(120px + env(safe-area-inset-bottom))",
       },
       borderRadius: {
         sm: "var(--radius-sm)",
