@@ -95,6 +95,63 @@ export function useWorkout() {
     };
   }, [user]);
 
+  useEffect(() => {
+    if (!todayLog?.id) return;
+
+    const channel = supabase
+      .channel(`workout-sets-${todayLog.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "workout_sets",
+          filter: `workout_log_id=eq.${todayLog.id}`
+        },
+        async (payload) => {
+          if (payload.eventType === "INSERT") {
+            const { data } = await supabase
+              .from("workout_sets")
+              .select(
+                "id,exercise_id,set_number,set_type,weight,reps,segments,rest_seconds,rpe,notes,photo_url,created_at,exercises(name,body_part)"
+              )
+              .eq("id", payload.new.id)
+              .single();
+
+            if (data) {
+              const normalizedSet = normalizeSets([data])[0];
+              setSets((prev) => {
+                if (prev.some((s) => s.id === normalizedSet.id)) return prev;
+                return [...prev, normalizedSet];
+              });
+            }
+          } else if (payload.eventType === "UPDATE") {
+            const { data } = await supabase
+              .from("workout_sets")
+              .select(
+                "id,exercise_id,set_number,set_type,weight,reps,segments,rest_seconds,rpe,notes,photo_url,created_at,exercises(name,body_part)"
+              )
+              .eq("id", payload.new.id)
+              .single();
+
+            if (data) {
+              const normalizedSet = normalizeSets([data])[0];
+              setSets((prev) =>
+                prev.map((s) => (s.id === normalizedSet.id ? normalizedSet : s))
+              );
+            }
+          } else if (payload.eventType === "DELETE") {
+            setSets((prev) => prev.filter((s) => s.id !== payload.old.id));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [todayLog?.id]);
+
   const startWorkout = useCallback(async (templateId = null) => {
     if (!todayLog) return false;
 
