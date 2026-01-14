@@ -23,9 +23,15 @@ export default function Achievements() {
   );
 
   const filteredAchievements = useMemo(() => {
-    if (selectedCategory === "all") return ACHIEVEMENTS;
-    return ACHIEVEMENTS.filter((a) => a.category === selectedCategory);
-  }, [selectedCategory]);
+    let achievements = selectedCategory === "all" ? ACHIEVEMENTS : ACHIEVEMENTS.filter((a) => a.category === selectedCategory);
+    
+    if (selectedCategory === "all" && nextAchievements.length > 0) {
+      const nextIds = new Set(nextAchievements.map((a) => a.id));
+      achievements = achievements.filter((a) => !nextIds.has(a.id));
+    }
+    
+    return achievements;
+  }, [selectedCategory, nextAchievements]);
 
   const unlockedCount = unlockedIds.length;
   const totalCount = ACHIEVEMENTS.length;
@@ -92,8 +98,8 @@ export default function Achievements() {
         </section>
       )}
 
-      <section className="mb-4">
-        <div className="hide-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-2">
+      <section className="sticky top-0 z-10 -mx-4 mb-4 bg-bg-primary/90 px-4 pt-2 pb-3 backdrop-blur-md">
+        <div className="hide-scrollbar flex gap-2 overflow-x-auto pb-1">
           {categories.map((cat) => (
             <button
               key={cat.key}

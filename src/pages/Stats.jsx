@@ -1,7 +1,7 @@
 import { useState } from "react";
 import BodyPartPieChart from "../components/BodyPartPieChart.jsx";
 import ExerciseProgressChart from "../components/ExerciseProgressChart.jsx";
-import LoadingScreen from "../components/LoadingScreen.jsx";
+import StatsSkeleton from "../components/StatsSkeleton.jsx";
 import PRProgressChart from "../components/PRProgressChart.jsx";
 import TrainingHeatmap from "../components/TrainingHeatmap.jsx";
 import VolumeTrendChart from "../components/VolumeTrendChart.jsx";
@@ -24,7 +24,7 @@ export default function Stats() {
   } = useStats(days);
 
   if (loading) {
-    return <LoadingScreen />;
+    return <StatsSkeleton />;
   }
 
   const trendData =

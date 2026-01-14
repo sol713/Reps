@@ -48,13 +48,13 @@ export default function ExercisePicker({
 
       <div className="relative">
         <input
-          className="input pl-10"
+          className="input !pl-11"
           placeholder="搜索动作..."
           value={searchQuery}
           onChange={(event) => setSearchQuery(event.target.value)}
         />
         <svg
-          className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-text-tertiary"
+          className="absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-text-tertiary pointer-events-none"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"

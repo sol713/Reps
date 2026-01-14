@@ -861,80 +861,79 @@ export default function Today() {
         </section>
       )}
 
-      <section className="space-y-4">
-        <div className="flex items-center justify-between px-1">
-          <h3 className="font-bold text-lg text-text-primary">已完成</h3>
-          <span className="chip bg-success/10 text-success border border-success/20 font-bold">{sets.length} 组</span>
-        </div>
-        {workoutLoading ? (
-          <div className="empty-state">
-            <div className="loading-spinner" />
+      {sets.length > 0 && (
+        <section className="space-y-4">
+          <div className="flex items-center justify-between px-1">
+            <h3 className="font-bold text-lg text-text-primary">已完成</h3>
+            <span className="chip bg-success/10 text-success border border-success/20 font-bold">{sets.length} 组</span>
           </div>
-        ) : workoutError ? (
-          <div className="empty-state">
-            <p className="text-sm text-danger">{workoutError}</p>
-          </div>
-        ) : todayGroups.length === 0 ? (
-          <div className="card text-center p-8">
-            <p className="text-sm text-text-secondary">还没有记录，开始你的第一组训练吧！</p>
-          </div>
-        ) : (
-          todayGroups.map((group) => {
-            const isCurrentExercise = currentExercise?.id === group.exerciseId;
-            return (
-              <div className="animate-fade-in" key={group.exerciseId}>
-                <button
-                  className="card card-interactive mb-2 flex w-full items-center justify-between p-4"
-                  type="button"
-                  onClick={() => {
-                    if (isCurrentExercise) {
-                      setCurrentExercise(null);
-                    } else {
-                      const ex = exercises.find((e) => e.id === group.exerciseId);
-                      if (ex) {
-                        setCurrentExercise(ex);
+          {workoutLoading ? (
+            <div className="empty-state">
+              <div className="loading-spinner" />
+            </div>
+          ) : workoutError ? (
+            <div className="empty-state">
+              <p className="text-sm text-danger">{workoutError}</p>
+            </div>
+          ) : (
+            todayGroups.map((group) => {
+              const isCurrentExercise = currentExercise?.id === group.exerciseId;
+              return (
+                <div className="animate-fade-in" key={group.exerciseId}>
+                  <button
+                    className="card card-interactive mb-2 flex w-full items-center justify-between p-4"
+                    type="button"
+                    onClick={() => {
+                      if (isCurrentExercise) {
+                        setCurrentExercise(null);
+                      } else {
+                        const ex = exercises.find((e) => e.id === group.exerciseId);
+                        if (ex) {
+                          setCurrentExercise(ex);
+                        }
                       }
-                    }
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${isCurrentExercise ? "bg-primary text-white" : "bg-bg-tertiary text-text-tertiary"}`}>
-                      <svg
-                        className={`h-4 w-4 transition-transform ${isCurrentExercise ? "rotate-90" : ""}`}
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${isCurrentExercise ? "bg-primary text-white" : "bg-bg-tertiary text-text-tertiary"}`}>
+                        <svg
+                          className={`h-4 w-4 transition-transform ${isCurrentExercise ? "rotate-90" : ""}`}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                      <span className={`font-bold ${isCurrentExercise ? "text-primary" : "text-text-primary"}`}>{group.exerciseName}</span>
                     </div>
-                    <span className={`font-bold ${isCurrentExercise ? "text-primary" : "text-text-primary"}`}>{group.exerciseName}</span>
-                  </div>
-                  <span className="text-sm font-medium text-text-secondary bg-bg-tertiary px-2 py-1 rounded-md">
-                    {group.sets.length} 组
-                  </span>
-                </button>
-                {isCurrentExercise && (
-                  <div className="mt-2 space-y-2 pl-4 border-l-2 border-primary/20 ml-4">
-                    {group.sets.map((set) => (
-                      <SetRow
-                        key={set.id}
-                        set={set}
-                        onDelete={handleDeleteSet}
-                        onEdit={handleEditOpen}
-                        onViewNote={(s) => setViewingNote(s)}
-                        onViewPhoto={(s) => setViewingPhoto(s)}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })
-        )}
-      </section>
+                    <span className="text-sm font-medium text-text-secondary bg-bg-tertiary px-2 py-1 rounded-md">
+                      {group.sets.length} 组
+                    </span>
+                  </button>
+                  {isCurrentExercise && (
+                    <div className="mt-2 space-y-2 pl-4 border-l-2 border-primary/20 ml-4">
+                      {group.sets.map((set) => (
+                        <SetRow
+                          key={set.id}
+                          set={set}
+                          onDelete={handleDeleteSet}
+                          onEdit={handleEditOpen}
+                          onViewNote={(s) => setViewingNote(s)}
+                          onViewPhoto={(s) => setViewingPhoto(s)}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </section>
+      )}
 
-      <section className="card relative overflow-hidden">
+      {sets.length > 0 && (
+        <section className="card relative overflow-hidden">
         <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-gradient-to-br from-primary/20 to-transparent rounded-full blur-2xl pointer-events-none" />
         
         <p className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-4 relative z-10">
@@ -954,7 +953,8 @@ export default function Today() {
             <p className="mt-1 text-2xl font-black text-gradient">{todaySummary.setCount}</p>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {sets.length > 0 && (
         <button
