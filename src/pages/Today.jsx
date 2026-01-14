@@ -740,27 +740,56 @@ export default function Today() {
             <p className="text-sm text-text-secondary">还没有记录，开始你的第一组训练吧！</p>
           </div>
         ) : (
-          todayGroups.map((group) => (
-            <div className="animate-fade-in space-y-2" key={group.exerciseId}>
-              <div className="flex items-center justify-between">
-                <p className="font-semibold text-text-primary">{group.exerciseName}</p>
-                <span className="text-sm text-text-secondary">
-                  {group.sets.length} 组
-                </span>
+          todayGroups.map((group) => {
+            const isCurrentExercise = currentExercise?.id === group.exerciseId;
+            return (
+              <div className="animate-fade-in" key={group.exerciseId}>
+                <button
+                  className="flex w-full items-center justify-between rounded-lg bg-bg-secondary px-3 py-2.5 text-left transition-colors active:bg-bg-tertiary"
+                  type="button"
+                  onClick={() => {
+                    if (isCurrentExercise) {
+                      setCurrentExercise(null);
+                    } else {
+                      const ex = exercises.find((e) => e.id === group.exerciseId);
+                      if (ex) {
+                        setCurrentExercise(ex);
+                        setCurrentBodyPart(ex.body_part);
+                      }
+                    }
+                  }}
+                >
+                  <div className="flex items-center gap-2">
+                    <svg
+                      className={`h-4 w-4 text-text-tertiary transition-transform ${isCurrentExercise ? "rotate-90" : ""}`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                    <span className="font-semibold text-text-primary">{group.exerciseName}</span>
+                  </div>
+                  <span className="text-sm text-text-secondary">
+                    {group.sets.length} 组
+                  </span>
+                </button>
+                {isCurrentExercise && (
+                  <div className="mt-2 space-y-2">
+                    {group.sets.map((set) => (
+                      <SetRow
+                        key={set.id}
+                        set={set}
+                        onDelete={handleDeleteSet}
+                        onEdit={handleEditOpen}
+                        onViewNote={(s) => setViewingNote(s)}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
-              <div className="space-y-2">
-                {group.sets.map((set) => (
-                  <SetRow
-                    key={set.id}
-                    set={set}
-                    onDelete={handleDeleteSet}
-                    onEdit={handleEditOpen}
-                    onViewNote={(s) => setViewingNote(s)}
-                  />
-                ))}
-              </div>
-            </div>
-          ))
+            );
+          })
         )}
       </section>
 
