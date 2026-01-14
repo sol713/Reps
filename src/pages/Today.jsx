@@ -93,6 +93,8 @@ export default function Today() {
   const [editLoading, setEditLoading] = useState(false);
   const [activeTemplate, setActiveTemplate] = useState(null);
   const [templateExerciseIndex, setTemplateExerciseIndex] = useState(0);
+  const [exerciseQueue, setExerciseQueue] = useState([]);
+  const [queueIndex, setQueueIndex] = useState(0);
   const [rpe, setRpe] = useState(null);
   const [setNotes, setSetNotes] = useState("");
   const [viewingNote, setViewingNote] = useState(null);
@@ -136,6 +138,9 @@ export default function Today() {
 
     setCurrentBodyPart(suggestedPart);
     await startWorkout();
+
+    setExerciseQueue(exercisesList);
+    setQueueIndex(0);
 
     const firstExercise = exercisesList[0];
     setCurrentExercise({
@@ -432,10 +437,39 @@ export default function Today() {
     }
   };
 
+  const handleNextQueueExercise = () => {
+    if (exerciseQueue.length === 0) return;
+    
+    const nextIndex = queueIndex + 1;
+    if (nextIndex >= exerciseQueue.length) {
+      setExerciseQueue([]);
+      setQueueIndex(0);
+      return;
+    }
+    
+    const nextEx = exerciseQueue[nextIndex];
+    setQueueIndex(nextIndex);
+    setCurrentExercise({
+      id: nextEx.exerciseId,
+      name: nextEx.exerciseName,
+      body_part: nextEx.bodyPart
+    });
+    
+    if (nextEx.sets.length > 0) {
+      const lastSet = nextEx.sets[nextEx.sets.length - 1];
+      setWeight(clampWeight(lastSet.weight));
+      setReps(clampReps(lastSet.reps));
+    }
+    
+    hapticFeedback("light");
+  };
+
   const handleFinishWorkout = async () => {
     await endWorkout();
     setShowSummary(true);
     setActiveTemplate(null);
+    setExerciseQueue([]);
+    setQueueIndex(0);
   };
 
   const handleEditOpen = (set) => {
@@ -591,6 +625,21 @@ export default function Today() {
             </div>
             <span className="text-xs text-text-secondary">
               {templateExerciseIndex + 1}/{activeTemplate.exercises.length}
+            </span>
+          </div>
+        )}
+        {!activeTemplate && exerciseQueue.length > 1 && (
+          <div className="mt-3 flex items-center gap-2">
+            <div className="h-2 flex-1 overflow-hidden rounded-full bg-bg-tertiary">
+              <div
+                className="h-full rounded-full bg-success transition-all"
+                style={{
+                  width: `${((queueIndex + 1) / exerciseQueue.length) * 100}%`
+                }}
+              />
+            </div>
+            <span className="text-xs text-text-secondary">
+              {queueIndex + 1}/{exerciseQueue.length}
             </span>
           </div>
         )}
@@ -757,6 +806,15 @@ export default function Today() {
               className="btn btn-secondary w-full text-base"
               type="button"
               onClick={handleNextTemplateExercise}
+            >
+              下一动作 →
+            </button>
+          )}
+          {!activeTemplate && exerciseQueue.length > 1 && queueIndex < exerciseQueue.length - 1 && (
+            <button
+              className="btn btn-secondary w-full text-base"
+              type="button"
+              onClick={handleNextQueueExercise}
             >
               下一动作 →
             </button>
