@@ -681,7 +681,7 @@ export default function Today() {
         />
       )}
 
-      {!currentExercise && !smartLoading && (
+      {!currentExercise && !smartLoading && sets.length === 0 && (
         <WorkoutSuggestions
           lastWorkoutParts={recentParts}
           onSelect={handleWorkoutSuggestionSelect}
