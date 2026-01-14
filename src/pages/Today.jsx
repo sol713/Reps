@@ -19,6 +19,7 @@ import SmartStartCard from "../components/SmartStartCard.jsx";
 import StreakBadge from "../components/StreakBadge.jsx";
 import UndoToast from "../components/UndoToast.jsx";
 import WeeklyGoalCard from "../components/WeeklyGoalCard.jsx";
+import PhotoUploader from "../components/PhotoUploader.jsx";
 
 import WorkoutSummaryCard from "../components/WorkoutSummaryCard.jsx";
 import { bodyParts } from "../data/bodyParts.js";
@@ -97,7 +98,9 @@ export default function Today() {
   const [queueIndex, setQueueIndex] = useState(0);
   const [rpe, setRpe] = useState(null);
   const [setNotes, setSetNotes] = useState("");
+  const [photoPath, setPhotoPath] = useState(null);
   const [viewingNote, setViewingNote] = useState(null);
+  const [viewingPhoto, setViewingPhoto] = useState(null);
   const deleteTimersRef = useRef(new Map());
 
   const {
@@ -329,13 +332,15 @@ export default function Today() {
         reps: safeReps,
         rest_seconds: restDuration,
         rpe: rpe,
-        notes: setNotes.trim() || null
+        notes: setNotes.trim() || null,
+        photo_url: photoPath
       });
       if (!result) {
         return;
       }
       setRpe(null);
       setSetNotes("");
+      setPhotoPath(null);
       setShowComplete(true);
       const pr = await checkForPR({
         exerciseId: result.exercise_id,
@@ -363,13 +368,15 @@ export default function Today() {
         segments: normalizedSegments,
         rest_seconds: restDuration,
         rpe: rpe,
-        notes: setNotes.trim() || null
+        notes: setNotes.trim() || null,
+        photo_url: photoPath
       });
       if (!result) {
         return;
       }
       setRpe(null);
       setSetNotes("");
+      setPhotoPath(null);
       setShowComplete(true);
     }
   };
@@ -793,6 +800,12 @@ export default function Today() {
 
           <SetNoteInput value={setNotes} onChange={setSetNotes} />
 
+          <PhotoUploader
+            photoUrl={null}
+            onUpload={(path) => setPhotoPath(path)}
+            onRemove={() => setPhotoPath(null)}
+          />
+
           <button
             className="btn btn-primary w-full text-base"
             type="button"
@@ -883,6 +896,7 @@ export default function Today() {
                         onDelete={handleDeleteSet}
                         onEdit={handleEditOpen}
                         onViewNote={(s) => setViewingNote(s)}
+                        onViewPhoto={(s) => setViewingPhoto(s)}
                       />
                     ))}
                   </div>
@@ -1077,6 +1091,34 @@ export default function Today() {
             className="btn btn-secondary w-full"
             type="button"
             onClick={() => setViewingNote(null)}
+          >
+            关闭
+          </button>
+        </div>
+      </Modal>
+
+      <Modal isOpen={Boolean(viewingPhoto)} onClose={() => setViewingPhoto(null)}>
+        <div className="space-y-4">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">
+              训练照片
+            </p>
+            <h3 className="text-lg font-bold text-text-primary">
+              {viewingPhoto?.exercise_name ?? "当前动作"}
+            </h3>
+            <p className="text-sm text-text-secondary">第 {viewingPhoto?.set_number} 组</p>
+          </div>
+          {viewingPhoto?.photo_url && (
+            <img
+              src={supabase.storage.from("workout-photos").getPublicUrl(viewingPhoto.photo_url).data?.publicUrl}
+              alt="训练照片"
+              className="w-full rounded-lg"
+            />
+          )}
+          <button
+            className="btn btn-secondary w-full"
+            type="button"
+            onClick={() => setViewingPhoto(null)}
           >
             关闭
           </button>

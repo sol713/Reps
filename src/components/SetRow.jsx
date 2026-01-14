@@ -1,8 +1,31 @@
 import { useRef, useState } from "react";
 import { RPEBadge } from "./RPESelector.jsx";
 import { NoteBadge } from "./SetNoteInput.jsx";
+import { supabase } from "../lib/supabase.js";
 
-export default function SetRow({ set, onDelete = () => {}, onEdit = () => {}, onViewNote = () => {} }) {
+function PhotoThumbnail({ photoPath, onClick }) {
+  if (!photoPath) return null;
+
+  const { data } = supabase.storage
+    .from("workout-photos")
+    .getPublicUrl(photoPath);
+
+  return (
+    <button
+      type="button"
+      className="h-8 w-8 overflow-hidden rounded-md"
+      onClick={onClick}
+    >
+      <img
+        src={data?.publicUrl}
+        alt="训练照片"
+        className="h-full w-full object-cover"
+      />
+    </button>
+  );
+}
+
+export default function SetRow({ set, onDelete = () => {}, onEdit = () => {}, onViewNote = () => {}, onViewPhoto = () => {} }) {
   const startX = useRef(0);
   const [offset, setOffset] = useState(0);
   const [showDelete, setShowDelete] = useState(false);
@@ -94,6 +117,15 @@ export default function SetRow({ set, onDelete = () => {}, onEdit = () => {}, on
           >
             编辑
           </button>
+          {set.photo_url && (
+            <PhotoThumbnail
+              photoPath={set.photo_url}
+              onClick={(event) => {
+                event.stopPropagation();
+                onViewPhoto(set);
+              }}
+            />
+          )}
           {set.rpe && <RPEBadge rpe={set.rpe} size="sm" />}
           {set.notes && (
             <NoteBadge
