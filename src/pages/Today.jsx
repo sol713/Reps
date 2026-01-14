@@ -18,6 +18,7 @@ import SmartStartCard from "../components/SmartStartCard.jsx";
 import StreakBadge from "../components/StreakBadge.jsx";
 import UndoToast from "../components/UndoToast.jsx";
 import WeeklyGoalCard from "../components/WeeklyGoalCard.jsx";
+import WorkoutSuggestions from "../components/WorkoutSuggestions.jsx";
 import PhotoUploader from "../components/PhotoUploader.jsx";
 
 import WorkoutSummaryCard from "../components/WorkoutSummaryCard.jsx";
@@ -129,6 +130,7 @@ export default function Today() {
     loading: smartLoading,
     suggestedPart,
     lastWorkout: smartLastWorkout,
+    recentParts,
     getExercisesFromLastWorkout
   } = useSmartSuggestion();
 
@@ -158,6 +160,10 @@ export default function Today() {
   };
 
   const handleChangeSuggestedPart = () => {
+    setShowExercisePicker(true);
+  };
+
+  const handleWorkoutSuggestionSelect = (suggestion) => {
     setShowExercisePicker(true);
   };
 
@@ -658,6 +664,13 @@ export default function Today() {
           exerciseCount={getExercisesFromLastWorkout().length}
           onStart={handleSmartStart}
           onChangePart={handleChangeSuggestedPart}
+        />
+      )}
+
+      {!currentExercise && !smartLoading && (
+        <WorkoutSuggestions
+          lastWorkoutParts={recentParts}
+          onSelect={handleWorkoutSuggestionSelect}
         />
       )}
 

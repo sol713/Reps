@@ -10,6 +10,7 @@ import Exercises from "./pages/Exercises.jsx";
 import History from "./pages/History.jsx";
 import HistoryDetail from "./pages/HistoryDetail.jsx";
 import Login from "./pages/Login.jsx";
+import Plans from "./pages/Plans.jsx";
 import Settings from "./pages/Settings.jsx";
 import Stats from "./pages/Stats.jsx";
 import TemplateDetail from "./pages/TemplateDetail.jsx";
@@ -33,6 +34,7 @@ function AppRoutes() {
           />
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Today />} />
+            <Route path="/plans" element={<Plans />} />
             <Route path="/templates" element={<Templates />} />
             <Route path="/templates/:id" element={<TemplateDetail />} />
             <Route path="/stats" element={<Stats />} />

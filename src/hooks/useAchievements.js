@@ -72,7 +72,7 @@ export function useAchievements() {
 
         supabase
           .from("workout_sets")
-          .select("id, weight, reps, segments, created_at, workout_log_id")
+          .select("id, weight, reps, segments, created_at, workout_log_id, exercise_id, exercises(body_part)")
           .in(
             "workout_log_id",
             (
@@ -103,6 +103,9 @@ export function useAchievements() {
         }
       });
 
+      // 计算单次训练中最多锻炼了多少个不同部位
+      const maxBodyPartsInWorkout = calculateMaxBodyPartsInWorkout(sets);
+
       const streak = calculateStreak(workouts);
       const weeklyWorkouts = calculateWeeklyWorkouts(workouts);
       const weekendStreak = calculateWeekendStreak(workouts);
@@ -132,7 +135,7 @@ export function useAchievements() {
         early_workout: earlyWorkout,
         late_workout: lateWorkout,
         weekend_streak: weekendStreak,
-        body_parts_in_workout: 0,
+        body_parts_in_workout: maxBodyPartsInWorkout,
         workout_duration: Math.round(maxDuration),
         weekly_workouts: weeklyWorkouts
       };
@@ -277,4 +280,29 @@ function calculateWeekendStreak(workouts) {
   }
 
   return streak;
+}
+
+function calculateMaxBodyPartsInWorkout(sets) {
+  if (sets.length === 0) return 0;
+
+  const workoutBodyParts = {};
+  sets.forEach((set) => {
+    const logId = set.workout_log_id;
+    const bodyPart = set.exercises?.body_part;
+    if (!logId || !bodyPart) return;
+
+    if (!workoutBodyParts[logId]) {
+      workoutBodyParts[logId] = new Set();
+    }
+    workoutBodyParts[logId].add(bodyPart);
+  });
+
+  let maxParts = 0;
+  Object.values(workoutBodyParts).forEach((partsSet) => {
+    if (partsSet.size > maxParts) {
+      maxParts = partsSet.size;
+    }
+  });
+
+  return maxParts;
 }

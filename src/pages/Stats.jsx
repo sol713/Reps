@@ -1,5 +1,6 @@
 import { useState } from "react";
 import BodyPartPieChart from "../components/BodyPartPieChart.jsx";
+import ExerciseProgressChart from "../components/ExerciseProgressChart.jsx";
 import LoadingScreen from "../components/LoadingScreen.jsx";
 import PRProgressChart from "../components/PRProgressChart.jsx";
 import TrainingHeatmap from "../components/TrainingHeatmap.jsx";
@@ -18,7 +19,8 @@ export default function Stats() {
     repsTrend,
     bodyPartDistribution,
     prProgress,
-    heatmapData
+    heatmapData,
+    trainedExercises
   } = useStats(days);
 
   if (loading) {
@@ -69,6 +71,10 @@ export default function Stats() {
               <PRProgressChart data={prProgress} />
             </section>
           </div>
+
+          <section className="card">
+            <ExerciseProgressChart exercises={trainedExercises} />
+          </section>
 
           <section className="card">
             <TrainingHeatmap data={heatmapData} />

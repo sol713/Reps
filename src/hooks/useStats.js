@@ -15,6 +15,7 @@ export function useStats(days = 7) {
   const [bodyPartDistribution, setBodyPartDistribution] = useState([]);
   const [prProgress, setPrProgress] = useState([]);
   const [heatmapData, setHeatmapData] = useState([]);
+  const [trainedExercises, setTrainedExercises] = useState([]);
 
   useEffect(() => {
     if (!user) {
@@ -127,6 +128,7 @@ export function useStats(days = 7) {
 
         await fetchPRProgress();
         await fetchHeatmapData();
+        await fetchTrainedExercises();
 
         setLoading(false);
       } catch (err) {
@@ -203,6 +205,28 @@ export function useStats(days = 7) {
     }
   };
 
+  const fetchTrainedExercises = async () => {
+    try {
+      const { data, error: exerciseError } = await supabase
+        .from("workout_sets")
+        .select("exercise_id, exercises(id, name, body_part)")
+        .not("exercise_id", "is", null);
+
+      if (exerciseError) throw exerciseError;
+
+      const exerciseMap = new Map();
+      (data || []).forEach((set) => {
+        if (set.exercises) {
+          exerciseMap.set(set.exercises.id, set.exercises);
+        }
+      });
+
+      setTrainedExercises(Array.from(exerciseMap.values()));
+    } catch (err) {
+      console.error("Failed to fetch trained exercises:", err);
+    }
+  };
+
   return {
     loading,
     error,
@@ -211,6 +235,7 @@ export function useStats(days = 7) {
     repsTrend,
     bodyPartDistribution,
     prProgress,
-    heatmapData
+    heatmapData,
+    trainedExercises
   };
 }

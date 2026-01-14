@@ -3,6 +3,13 @@ import { hapticFeedback } from "../lib/haptics.js";
 
 const QUICK_ACTIONS = [
   {
+    id: "plans",
+    label: "计划",
+    icon: "🗓️",
+    path: "/plans",
+    color: "#8b5cf6"
+  },
+  {
     id: "templates",
     label: "模板",
     icon: "📋",
@@ -15,13 +22,6 @@ const QUICK_ACTIONS = [
     icon: "📅",
     path: "/history",
     color: "#30D158"
-  },
-  {
-    id: "achievements",
-    label: "成就",
-    icon: "🏆",
-    path: "/achievements",
-    color: "#FFD60A"
   },
   {
     id: "stats",
