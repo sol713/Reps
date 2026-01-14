@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import BodyPartSelector from "../components/BodyPartSelector.jsx";
 import BottomSheet from "../components/BottomSheet.jsx";
 import DropSetInput from "../components/DropSetInput.jsx";
 import ExercisePicker from "../components/ExercisePicker.jsx";
@@ -22,7 +21,6 @@ import WeeklyGoalCard from "../components/WeeklyGoalCard.jsx";
 import PhotoUploader from "../components/PhotoUploader.jsx";
 
 import WorkoutSummaryCard from "../components/WorkoutSummaryCard.jsx";
-import { bodyParts } from "../data/bodyParts.js";
 import { formatDate, getTodayIsoDate, getYesterdayIsoDate } from "../lib/date.js";
 import { hapticFeedback } from "../lib/haptics.js";
 import { normalizeSets } from "../lib/sets.js";
@@ -68,7 +66,6 @@ export default function Today() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  const [currentBodyPart, setCurrentBodyPart] = useState("chest");
   const [currentExercise, setCurrentExercise] = useState(null);
   const [showExercisePicker, setShowExercisePicker] = useState(false);
   const [weight, setWeight] = useState(20);
@@ -139,7 +136,6 @@ export default function Today() {
     const exercisesList = getExercisesFromLastWorkout();
     if (exercisesList.length === 0) return;
 
-    setCurrentBodyPart(suggestedPart);
     await startWorkout();
 
     setExerciseQueue(exercisesList);
@@ -666,12 +662,6 @@ export default function Today() {
         />
       )}
 
-      <BodyPartSelector
-        options={bodyParts.map((part) => part.label)}
-        selected={currentBodyPart}
-        onChange={setCurrentBodyPart}
-      />
-
       <button
         className="card card-interactive flex items-center justify-between"
         type="button"
@@ -867,7 +857,6 @@ export default function Today() {
                       const ex = exercises.find((e) => e.id === group.exerciseId);
                       if (ex) {
                         setCurrentExercise(ex);
-                        setCurrentBodyPart(ex.body_part);
                       }
                     }
                   }}
@@ -954,7 +943,7 @@ export default function Today() {
         onClose={() => setShowExercisePicker(false)}
       >
         <ExercisePicker
-          bodyPart={currentBodyPart}
+          initialBodyPart={currentExercise?.body_part || null}
           exercises={exercises}
           recentExercises={recentExercises}
           loading={exercisesLoading}

@@ -3,7 +3,7 @@ import { bodyParts } from "../data/bodyParts.js";
 import { searchExercises } from "../lib/exerciseSearch.js";
 
 export default function ExercisePicker({
-  bodyPart,
+  initialBodyPart = null,
   recentExercises = [],
   exercises = [],
   onSelect = () => {},
@@ -12,19 +12,40 @@ export default function ExercisePicker({
   error = ""
 }) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedPart, setSelectedPart] = useState(initialBodyPart);
 
   const filteredExercises = useMemo(() => {
-    const scoped = bodyPart
-      ? exercises.filter((exercise) => exercise.body_part === bodyPart)
+    const scoped = selectedPart
+      ? exercises.filter((exercise) => exercise.body_part === selectedPart)
       : exercises;
     return searchExercises(searchQuery, scoped);
-  }, [bodyPart, exercises, searchQuery]);
+  }, [selectedPart, exercises, searchQuery]);
 
   const bodyPartLabel =
-    bodyParts.find((part) => part.key === bodyPart)?.label ?? "全部";
+    bodyParts.find((part) => part.key === selectedPart)?.label ?? "全部";
 
   return (
     <div className="space-y-5">
+      <div className="flex flex-wrap gap-2">
+        <button
+          className={`chip ${!selectedPart ? "chip-selected" : ""}`}
+          type="button"
+          onClick={() => setSelectedPart(null)}
+        >
+          全部
+        </button>
+        {bodyParts.map((part) => (
+          <button
+            className={`chip ${selectedPart === part.key ? "chip-selected" : ""}`}
+            key={part.key}
+            type="button"
+            onClick={() => setSelectedPart(part.key)}
+          >
+            {part.label}
+          </button>
+        ))}
+      </div>
+
       <div className="relative">
         <input
           className="input pl-10"
@@ -66,7 +87,7 @@ export default function ExercisePicker({
 
       <section className="space-y-3">
         <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">
-          {bodyPart ? `${bodyPartLabel}动作` : "全部动作"}
+          {selectedPart ? `${bodyPartLabel}动作` : "全部动作"}
         </p>
         <div className="space-y-2">
           {loading && (
@@ -86,7 +107,14 @@ export default function ExercisePicker({
                 type="button"
                 onClick={() => onSelect(exercise)}
               >
-                <span className="font-semibold text-text-primary">{exercise.name}</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-text-primary">{exercise.name}</span>
+                  {!selectedPart && (
+                    <span className="text-xs text-text-tertiary">
+                      {bodyParts.find((p) => p.key === exercise.body_part)?.label}
+                    </span>
+                  )}
+                </div>
                 {!exercise.is_preset && (
                   <span className="rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-2 py-0.5 text-[10px] font-bold text-white">
                     自定义
