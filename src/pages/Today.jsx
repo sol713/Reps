@@ -22,6 +22,7 @@ import WorkoutSuggestions from "../components/WorkoutSuggestions.jsx";
 import PhotoUploader from "../components/PhotoUploader.jsx";
 
 import WorkoutSummaryCard from "../components/WorkoutSummaryCard.jsx";
+import { bodyParts } from "../data/bodyParts.js";
 import { formatDate, getTodayIsoDate, getYesterdayIsoDate } from "../lib/date.js";
 import { hapticFeedback } from "../lib/haptics.js";
 import { normalizeSets } from "../lib/sets.js";
@@ -99,7 +100,16 @@ export default function Today() {
   const [photoPath, setPhotoPath] = useState(null);
   const [viewingNote, setViewingNote] = useState(null);
   const [viewingPhoto, setViewingPhoto] = useState(null);
+  const [pickerInitialBodyPart, setPickerInitialBodyPart] = useState(null);
   const deleteTimersRef = useRef(new Map());
+
+  const labelToKeyMap = useMemo(() => {
+    const map = {};
+    bodyParts.forEach((part) => {
+      map[part.label] = part.key;
+    });
+    return map;
+  }, []);
 
   const {
     exercises,
@@ -164,6 +174,9 @@ export default function Today() {
   };
 
   const handleWorkoutSuggestionSelect = (suggestion) => {
+    const firstExerciseLabel = suggestion.exercises?.[0];
+    const bodyPartKey = firstExerciseLabel ? labelToKeyMap[firstExerciseLabel] : null;
+    setPickerInitialBodyPart(bodyPartKey);
     setShowExercisePicker(true);
   };
 
@@ -305,6 +318,7 @@ export default function Today() {
     setCurrentExercise(exercise);
     markAsRecent(exercise.id);
     setShowExercisePicker(false);
+    setPickerInitialBodyPart(null);
   };
 
   const handleRecordSet = async () => {
@@ -966,10 +980,13 @@ export default function Today() {
       <BottomSheet
         isOpen={showExercisePicker}
         title="选择动作"
-        onClose={() => setShowExercisePicker(false)}
+        onClose={() => {
+          setShowExercisePicker(false);
+          setPickerInitialBodyPart(null);
+        }}
       >
         <ExercisePicker
-          initialBodyPart={currentExercise?.body_part || null}
+          initialBodyPart={pickerInitialBodyPart ?? currentExercise?.body_part ?? null}
           exercises={exercises}
           recentExercises={recentExercises}
           loading={exercisesLoading}
