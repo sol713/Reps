@@ -63,33 +63,46 @@ export default function WeeklyGoalCard({ targetDays = 6 }) {
   const mondayDate = new Date(start);
 
   return (
-    <div className="weekly-goal-card">
-      <div className="weekly-goal-header">
+    <div className="card relative overflow-hidden">
+      <div className="absolute top-0 left-0 -mt-6 -ml-6 w-20 h-20 bg-gradient-to-br from-primary/20 to-transparent rounded-full blur-2xl pointer-events-none" />
+      
+      <div className="relative z-10 flex items-center justify-between">
         <div>
-          <p className="weekly-goal-label">本周目标</p>
-          <p className="weekly-goal-progress">
-            <span className="weekly-goal-current">{completedDays}</span>
-            <span className="weekly-goal-divider">/</span>
-            <span className="weekly-goal-target">{targetDays} 天</span>
+          <p className="text-xs font-bold uppercase tracking-widest text-text-secondary">
+            本周目标
+          </p>
+          <p className="mt-1 flex items-baseline gap-1">
+            <span className="text-3xl font-black text-gradient">{completedDays}</span>
+            <span className="text-lg text-text-tertiary">/</span>
+            <span className="text-lg font-semibold text-text-secondary">{targetDays} 天</span>
           </p>
         </div>
-        <div className="weekly-goal-status">
+        <div>
           {completedDays >= targetDays ? (
-            <span className="weekly-goal-complete">🎉 达成!</span>
+            <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-3 py-1.5 text-sm font-bold text-success">
+              🎉 达成!
+            </span>
           ) : (
-            <span className="weekly-goal-remaining">还差 {remaining} 天</span>
+            <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-3 py-1.5 text-sm font-medium text-warning">
+              还差 {remaining} 天
+            </span>
           )}
         </div>
       </div>
 
-      <div className="weekly-goal-bar">
+      <div className="relative z-10 mt-4 h-2 overflow-hidden rounded-full bg-bg-tertiary">
         <div 
-          className="weekly-goal-bar-fill" 
-          style={{ width: `${progress}%` }}
+          className="h-full rounded-full transition-all duration-500"
+          style={{ 
+            width: `${progress}%`,
+            background: completedDays >= targetDays 
+              ? 'var(--gradient-success)' 
+              : 'var(--gradient-primary)'
+          }}
         />
       </div>
 
-      <div className="weekly-goal-days">
+      <div className="relative z-10 mt-4 grid grid-cols-7 gap-2">
         {weekDayLabels.map((label, index) => {
           const dayDate = new Date(mondayDate);
           dayDate.setDate(mondayDate.getDate() + index);
@@ -100,10 +113,22 @@ export default function WeeklyGoalCard({ targetDays = 6 }) {
           return (
             <div
               key={label}
-              className={`weekly-goal-day ${isCompleted ? "completed" : ""} ${isToday ? "today" : ""}`}
+              className={`
+                flex flex-col items-center justify-center rounded-xl py-2 transition-all
+                ${isCompleted 
+                  ? "bg-primary text-white" 
+                  : isToday 
+                    ? "bg-bg-tertiary ring-2 ring-primary/50" 
+                    : "bg-bg-tertiary/50"
+                }
+              `}
             >
-              <span className="weekly-goal-day-label">{label}</span>
-              {isCompleted && <span className="weekly-goal-day-check">✓</span>}
+              <span className={`text-xs font-medium ${isCompleted ? "text-white/80" : "text-text-tertiary"}`}>
+                {label}
+              </span>
+              {isCompleted && (
+                <span className="mt-0.5 text-sm">✓</span>
+              )}
             </div>
           );
         })}
