@@ -46,7 +46,7 @@ function groupSets(sets) {
     current.sets.push(set);
     groups.set(set.exercise_id, current);
   });
-  return Array.from(groups.values());
+  return Array.from(groups.values()).reverse();
 }
 
 const WEIGHT_MIN = 5;
