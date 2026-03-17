@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { bodyParts } from "../data/bodyParts.js";
 import { formatDate } from "../lib/date.js";
 import { normalizeSets } from "../lib/sets.js";
-import { supabase } from "../lib/supabase.js";
+import { insforge } from "../lib/insforge.js";
 import { useAuth } from "../hooks/useAuth.jsx";
 
 const LOG_SELECT =
@@ -45,7 +45,7 @@ export default function HistoryDetail() {
       setLoading(true);
       setError("");
 
-      const { data, error: fetchError } = await supabase
+      const { data, error: fetchError } = await insforge.database
         .from("workout_logs")
         .select(LOG_SELECT)
         .eq("date", date)

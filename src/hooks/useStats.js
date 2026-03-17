@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { bodyParts } from "../data/bodyParts.js";
 import { calculateVolume } from "../lib/stats.js";
-import { supabase } from "../lib/supabase.js";
+import { insforge } from "../lib/insforge.js";
 import { useAuth } from "./useAuth.jsx";
 
 export function useStats(days = 7) {
@@ -35,7 +35,7 @@ export function useStats(days = 7) {
         const startDateStr = startDate.toISOString().split("T")[0];
         const endDateStr = endDate.toISOString().split("T")[0];
 
-        const { data: logs, error: logsError } = await supabase
+        const { data: logs, error: logsError } = await insforge.database
           .from("workout_logs")
           .select(
             "id,date,workout_sets(id,exercise_id,set_type,weight,reps,segments,exercises(name,body_part))"
@@ -142,7 +142,7 @@ export function useStats(days = 7) {
 
   const fetchPRProgress = async () => {
     try {
-      const { data, error: prError } = await supabase
+      const { data, error: prError } = await insforge.database
         .from("pr_records")
         .select("id,exercise_id,weight,achieved_at,exercises(name)")
         .order("achieved_at", { ascending: true })
@@ -182,7 +182,7 @@ export function useStats(days = 7) {
       const startDateStr = startDate.toISOString().split("T")[0];
       const endDateStr = endDate.toISOString().split("T")[0];
 
-      const { data, error: heatmapError } = await supabase
+      const { data, error: heatmapError } = await insforge.database
         .from("workout_logs")
         .select("date,workout_sets(id,set_type,weight,reps,segments)")
         .gte("date", startDateStr)
@@ -207,7 +207,7 @@ export function useStats(days = 7) {
 
   const fetchTrainedExercises = async () => {
     try {
-      const { data, error: exerciseError } = await supabase
+      const { data, error: exerciseError } = await insforge.database
         .from("workout_sets")
         .select("exercise_id, exercises(id, name, body_part)")
         .not("exercise_id", "is", null);

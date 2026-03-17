@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { supabase } from "../lib/supabase.js";
+import { insforge } from "../lib/insforge.js";
 
 const AuthContext = createContext(null);
 
@@ -10,42 +10,36 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     let isMounted = true;
 
-    supabase.auth.getSession().then(({ data }) => {
-      if (!isMounted) {
-        return;
-      }
-      setUser(data.session?.user ?? null);
+    insforge.auth.getCurrentSession().then(({ data, error }) => {
+      if (!isMounted) return;
+      setUser(data?.session?.user ?? null);
       setLoading(false);
-    });
-
-    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
     });
 
     return () => {
       isMounted = false;
-      data.subscription.unsubscribe();
     };
   }, []);
 
   const signUp = async (email, password) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password
-    });
+    const { data, error } = await insforge.auth.signUp({ email, password });
+    if (!error && data?.user) {
+      setUser(data.user);
+    }
     return { data, error };
   };
 
   const signIn = async (email, password) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
+    const { data, error } = await insforge.auth.signInWithPassword({ email, password });
+    if (!error && data?.user) {
+      setUser(data.user);
+    }
     return { data, error };
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    await insforge.auth.signOut();
+    setUser(null);
   };
 
   const value = useMemo(

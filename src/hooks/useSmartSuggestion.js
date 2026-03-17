@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getTodayIsoDate } from "../lib/date.js";
 import { normalizeSets } from "../lib/sets.js";
-import { supabase } from "../lib/supabase.js";
+import { insforge } from "../lib/insforge.js";
 import { useAuth } from "./useAuth.jsx";
 
 const ROTATION = ["chest", "back", "shoulder", "chest", "back", "core"];
@@ -59,7 +59,7 @@ export function useSmartSuggestion() {
       setLoading(true);
 
       const today = getTodayIsoDate();
-      const { data, error } = await supabase
+      const { data, error } = await insforge.database
         .from("workout_logs")
         .select(LOG_SELECT)
         .lt("date", today)

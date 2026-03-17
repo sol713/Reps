@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { supabase } from "../lib/supabase.js";
+import { insforge } from "../lib/insforge.js";
 import { storage } from "../lib/storage.js";
 import { useAuth } from "./useAuth.jsx";
 
@@ -28,7 +28,7 @@ export function useExercises() {
       setLoading(true);
       setError("");
 
-      const { data, error: fetchError } = await supabase
+      const { data, error: fetchError } = await insforge.database
         .from("exercises")
         .select("id,name,body_part,is_preset")
         .order("is_preset", { ascending: false })
@@ -93,7 +93,7 @@ export function useExercises() {
       return { ok: false, error: "该动作已存在。" };
     }
 
-    const { data, error: insertError } = await supabase
+    const { data, error: insertError } = await insforge.database
       .from("exercises")
       .insert({
         name: trimmedName,
@@ -114,7 +114,7 @@ export function useExercises() {
   };
 
   const deleteExercise = async (id) => {
-    const { error: deleteError } = await supabase
+    const { error: deleteError } = await insforge.database
       .from("exercises")
       .delete()
       .eq("id", id);
