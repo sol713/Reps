@@ -3,7 +3,7 @@ import Modal from "../components/Modal.jsx";
 import { useAuth } from "../hooks/useAuth.jsx";
 import { useSettings } from "../hooks/useSettings.jsx";
 import { useTheme } from "../hooks/useTheme.jsx";
-import { supabase } from "../lib/supabase.js";
+import { insforge } from "../lib/insforge.js";
 
 export default function Settings() {
   const { user, signOut } = useAuth();

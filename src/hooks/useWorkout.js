@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { getTodayIsoDate } from "../lib/date.js";
 import { normalizeSets } from "../lib/sets.js";
-import { supabase } from "../lib/supabase.js";
+import { insforge } from "../lib/insforge.js";
 import { useAuth } from "./useAuth.jsx";
 
 const LOG_SELECT =
@@ -29,7 +29,7 @@ export function useWorkout() {
       setError("");
 
       const today = getTodayIsoDate();
-      const { data, error: fetchError } = await supabase
+      const { data, error: fetchError } = await insforge.database
         .from("workout_logs")
         .select(LOG_SELECT)
         .eq("date", today)
@@ -60,7 +60,7 @@ export function useWorkout() {
         return;
       }
 
-      const { data: created, error: createError } = await supabase
+      const { data: created, error: createError } = await insforge.database
         .from("workout_logs")
         .insert({ date: today, user_id: user.id })
         .select("id,date,template_id,started_at,ended_at,notes")
@@ -95,68 +95,14 @@ export function useWorkout() {
     };
   }, [user]);
 
-  useEffect(() => {
-    if (!todayLog?.id) return;
-
-    const channel = supabase
-      .channel(`workout-sets-${todayLog.id}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "workout_sets",
-          filter: `workout_log_id=eq.${todayLog.id}`
-        },
-        async (payload) => {
-          if (payload.eventType === "INSERT") {
-            const { data } = await supabase
-              .from("workout_sets")
-              .select(
-                "id,exercise_id,set_number,set_type,weight,reps,segments,rest_seconds,rpe,notes,photo_url,created_at,exercises(name,body_part)"
-              )
-              .eq("id", payload.new.id)
-              .single();
-
-            if (data) {
-              const normalizedSet = normalizeSets([data])[0];
-              setSets((prev) => {
-                if (prev.some((s) => s.id === normalizedSet.id)) return prev;
-                return [...prev, normalizedSet];
-              });
-            }
-          } else if (payload.eventType === "UPDATE") {
-            const { data } = await supabase
-              .from("workout_sets")
-              .select(
-                "id,exercise_id,set_number,set_type,weight,reps,segments,rest_seconds,rpe,notes,photo_url,created_at,exercises(name,body_part)"
-              )
-              .eq("id", payload.new.id)
-              .single();
-
-            if (data) {
-              const normalizedSet = normalizeSets([data])[0];
-              setSets((prev) =>
-                prev.map((s) => (s.id === normalizedSet.id ? normalizedSet : s))
-              );
-            }
-          } else if (payload.eventType === "DELETE") {
-            setSets((prev) => prev.filter((s) => s.id !== payload.old.id));
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [todayLog?.id]);
+  // Note: Realtime subscriptions removed during InsForge migration.
+  // State updates are handled locally in addSet/updateSet/deleteSet.
 
   const startWorkout = useCallback(async (templateId = null) => {
     if (!todayLog) return false;
 
     const now = new Date().toISOString();
-    const { error: updateError } = await supabase
+    const { error: updateError } = await insforge.database
       .from("workout_logs")
       .update({
         started_at: todayLog.startedAt ?? now,
@@ -181,7 +127,7 @@ export function useWorkout() {
     if (!todayLog) return false;
 
     const now = new Date().toISOString();
-    const { error: updateError } = await supabase
+    const { error: updateError } = await insforge.database
       .from("workout_logs")
       .update({
         ended_at: now,
@@ -211,7 +157,7 @@ export function useWorkout() {
       await startWorkout();
     }
 
-    const { data: maxData, error: maxError } = await supabase
+    const { data: maxData, error: maxError } = await insforge.database
       .from("workout_sets")
       .select("set_number")
       .eq("workout_log_id", todayLog.id)
@@ -240,7 +186,7 @@ export function useWorkout() {
       notes: setData.notes ?? null
     };
 
-    const { data, error: insertError } = await supabase
+    const { data, error: insertError } = await insforge.database
       .from("workout_sets")
       .insert(payload)
       .select(
@@ -260,7 +206,7 @@ export function useWorkout() {
   };
 
   const deleteSet = async (setId) => {
-    const { error: deleteError } = await supabase
+    const { error: deleteError } = await insforge.database
       .from("workout_sets")
       .delete()
       .eq("id", setId);
@@ -297,7 +243,7 @@ export function useWorkout() {
       payload.reps = null;
     }
 
-    const { data, error: updateError } = await supabase
+    const { data, error: updateError } = await insforge.database
       .from("workout_sets")
       .update(payload)
       .eq("id", setId)
@@ -341,7 +287,7 @@ export function useWorkout() {
       return [];
     }
 
-    const { data, error: historyError } = await supabase
+    const { data, error: historyError } = await insforge.database
       .from("workout_sets")
       .select(
         "id,exercise_id,set_number,set_type,weight,reps,segments,rest_seconds,rpe,notes,created_at,exercises(name,body_part)"

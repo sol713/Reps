@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getPreviousDayIso, getTodayIsoDate, getYesterdayIsoDate } from "../lib/date.js";
-import { supabase } from "../lib/supabase.js";
+import { insforge } from "../lib/insforge.js";
 import { useAuth } from "./useAuth.jsx";
 
 export function useStreak(refreshKey) {
@@ -20,7 +20,7 @@ export function useStreak(refreshKey) {
 
       setLoading(true);
 
-      const { data, error } = await supabase
+      const { data, error } = await insforge.database
         .from("workout_logs")
         .select("date")
         .eq("user_id", user.id)

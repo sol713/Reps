@@ -8,7 +8,7 @@ import {
   XAxis,
   YAxis
 } from "recharts";
-import { supabase } from "../lib/supabase.js";
+import { insforge } from "../lib/insforge.js";
 import { useAuth } from "../hooks/useAuth.jsx";
 
 export default function ExerciseProgressChart({ exercises = [] }) {
@@ -29,7 +29,7 @@ export default function ExerciseProgressChart({ exercises = [] }) {
     const fetchProgress = async () => {
       setLoading(true);
 
-      const { data: sets, error } = await supabase
+      const { data: sets, error } = await insforge.database
         .from("workout_sets")
         .select("id, weight, reps, set_type, segments, created_at")
         .eq("exercise_id", selectedExercise.id)
@@ -148,11 +148,11 @@ export default function ExerciseProgressChart({ exercises = [] }) {
             />
             <Tooltip content={<CustomTooltip />} cursor={{ stroke: "var(--border-primary)" }} />
             <Line
-              activeDot={{ r: 6, stroke: "#8b5cf6", strokeWidth: 2 }}
+              activeDot={{ r: 6, stroke: "#18181b", strokeWidth: 2 }}
               dataKey="weight"
-              dot={{ r: 3, fill: "#8b5cf6" }}
+              dot={{ r: 3, fill: "#18181b" }}
               name="重量"
-              stroke="#8b5cf6"
+              stroke="#18181b"
               strokeWidth={3}
               type="monotone"
             />

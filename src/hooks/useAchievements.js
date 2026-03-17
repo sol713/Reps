@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { supabase } from "../lib/supabase.js";
+import { insforge } from "../lib/insforge.js";
 import { ACHIEVEMENTS, calculateProgress } from "../data/achievements.js";
 import { useAuth } from "./useAuth.jsx";
 
@@ -64,26 +64,26 @@ export function useAchievements() {
 
     try {
       const [workoutsResult, setsResult, prsResult] = await Promise.all([
-        supabase
+        insforge.database
           .from("workout_logs")
           .select("id, date, started_at, ended_at")
           .eq("user_id", user.id)
           .not("started_at", "is", null),
 
-        supabase
+        insforge.database
           .from("workout_sets")
           .select("id, weight, reps, segments, created_at, workout_log_id, exercise_id, exercises(body_part)")
           .in(
             "workout_log_id",
             (
-              await supabase
+              await insforge.database
                 .from("workout_logs")
                 .select("id")
                 .eq("user_id", user.id)
             ).data?.map((w) => w.id) ?? []
           ),
 
-        supabase.from("pr_records").select("id").eq("user_id", user.id)
+        insforge.database.from("pr_records").select("id").eq("user_id", user.id)
       ]);
 
       const workouts = workoutsResult.data ?? [];

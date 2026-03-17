@@ -19,7 +19,7 @@ import { getTodayIsoDate, getYesterdayIsoDate } from "../../lib/date.js";
 import { hapticFeedback } from "../../lib/haptics.js";
 import { normalizeSets } from "../../lib/sets.js";
 import { calculateWorkoutStats } from "../../lib/stats.js";
-import { supabase } from "../../lib/supabase.js";
+import { insforge } from "../../lib/insforge.js";
 
 import { useAuth } from "../../hooks/useAuth.jsx";
 import { useExercises } from "../../hooks/useExercises.js";
@@ -281,7 +281,7 @@ export default function Today() {
 
       setYesterdayStats(undefined);
       const yesterday = getYesterdayIsoDate();
-      const { data, error } = await supabase
+      const { data, error } = await insforge.database
         .from("workout_logs")
         .select(
           "id,date,workout_sets(id,exercise_id,set_number,set_type,weight,reps,segments,created_at,exercises(name,body_part))"
@@ -486,13 +486,19 @@ export default function Today() {
         onClick={() => setShowExercisePicker(true)}
       >
         <div>
-          <p className="text-xs font-bold uppercase tracking-widest text-text-tertiary group-hover:text-primary transition-colors">选择动作</p>
-          <p className="mt-1 text-xl font-bold text-text-primary group-hover:text-gradient transition-all">
+          <p className="text-xs font-medium uppercase tracking-wider text-text-tertiary">
+            选择动作
+          </p>
+          <p className="mt-1 text-lg font-semibold text-text-primary">
             {currentExercise?.name ?? "点击选择动作"}
           </p>
         </div>
-        <span className="chip group-hover:bg-primary/10 group-hover:text-primary transition-all">
-           🔍 搜索
+        <span className="flex items-center gap-1.5 rounded-lg bg-bg-tertiary px-3 py-1.5 text-xs font-medium text-text-secondary group-hover:bg-text-primary group-hover:text-bg-primary transition-all">
+          <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          搜索
         </span>
       </button>
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { supabase } from "../lib/supabase.js";
+import { insforge } from "../lib/insforge.js";
 import { useAuth } from "./useAuth.jsx";
 
 export function usePRDetector() {
@@ -12,7 +12,7 @@ export function usePRDetector() {
       return null;
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await insforge.database
       .from("workout_sets")
       .select("id, weight")
       .eq("exercise_id", exerciseId)
@@ -39,7 +39,7 @@ export function usePRDetector() {
 
     setNewPR(prData);
 
-    await supabase.from("pr_records").insert({
+    await insforge.database.from("pr_records").insert({
       user_id: user.id,
       exercise_id: exerciseId,
       weight: normalizedWeight
