@@ -9,9 +9,9 @@ import {
 } from "recharts";
 
 const METRICS = {
-  volume: { label: "容量", color: "#8b5cf6", unit: "kg" }, // Purple
-  sets: { label: "组数", color: "#10b981", unit: "组" },   // Emerald
-  reps: { label: "次数", color: "#d946ef", unit: "次" }    // Pink
+  volume: { label: "容量", color: "#18181b", unit: "kg" },
+  sets: { label: "组数", color: "#52525b", unit: "组" },
+  reps: { label: "次数", color: "#a1a1aa", unit: "次" }
 };
 
 export default function VolumeTrendChart({ data, period, metric, onPeriodChange, onMetricChange }) {
