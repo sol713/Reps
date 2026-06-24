@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { supabase } from "../lib/supabase.js";
+import { insforge } from "../lib/insforge.js";
 import { useAuth } from "./useAuth.jsx";
 
 export function useWorkoutPlans(startDate, endDate) {
@@ -18,7 +18,7 @@ export function useWorkoutPlans(startDate, endDate) {
     setLoading(true);
     setError("");
 
-    const { data, error: fetchError } = await supabase
+    const { data, error: fetchError } = await insforge.database
       .from("workout_plans")
       .select("id, template_id, planned_date, completed, notes, workout_templates(id, name, color)")
       .gte("planned_date", startDate)
@@ -35,7 +35,7 @@ export function useWorkoutPlans(startDate, endDate) {
       id: plan.id,
       templateId: plan.template_id,
       templateName: plan.workout_templates?.name || "未知模板",
-      templateColor: plan.workout_templates?.color || "#8b5cf6",
+      templateColor: plan.workout_templates?.color || "#18181b",
       plannedDate: plan.planned_date,
       completed: plan.completed,
       notes: plan.notes
@@ -52,7 +52,7 @@ export function useWorkoutPlans(startDate, endDate) {
   const addPlan = async (templateId, plannedDate, notes = "") => {
     if (!user || !templateId || !plannedDate) return null;
 
-    const { data, error: insertError } = await supabase
+    const { data, error: insertError } = await insforge.database
       .from("workout_plans")
       .insert({
         user_id: user.id,
@@ -72,7 +72,7 @@ export function useWorkoutPlans(startDate, endDate) {
       id: data.id,
       templateId: data.template_id,
       templateName: data.workout_templates?.name || "未知模板",
-      templateColor: data.workout_templates?.color || "#8b5cf6",
+      templateColor: data.workout_templates?.color || "#18181b",
       plannedDate: data.planned_date,
       completed: data.completed,
       notes: data.notes
@@ -83,7 +83,7 @@ export function useWorkoutPlans(startDate, endDate) {
   };
 
   const deletePlan = async (planId) => {
-    const { error: deleteError } = await supabase
+    const { error: deleteError } = await insforge.database
       .from("workout_plans")
       .delete()
       .eq("id", planId);
@@ -101,7 +101,7 @@ export function useWorkoutPlans(startDate, endDate) {
     const plan = plans.find((p) => p.id === planId);
     if (!plan) return false;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await insforge.database
       .from("workout_plans")
       .update({ completed: !plan.completed })
       .eq("id", planId);

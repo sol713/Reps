@@ -26,14 +26,29 @@ export default function Login() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-bg-primary px-4">
-      <div className="w-full max-w-sm space-y-6">
+      <div className="w-full max-w-sm space-y-8">
+        {/* Logo & branding */}
         <div className="text-center">
-          <div className="text-4xl">🏋️</div>
-          <h1 className="mt-3 text-2xl font-bold text-text-primary">Reps</h1>
-          <p className="mt-1 text-sm text-text-secondary">记录每一组</p>
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-text-primary">
+            <svg className="h-8 w-8 text-bg-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6.5 6.5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2h0a2 2 0 0 1-2-2Z" />
+              <path d="M13.5 6.5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2h0a2 2 0 0 1-2-2Z" />
+              <path d="M4 10.5h16" />
+              <path d="M6 10.5v7a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-7" />
+              <path d="M4 10.5a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h2.5" />
+              <path d="M20 10.5a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-2.5" />
+            </svg>
+          </div>
+          <h1 className="mt-5 text-2xl font-bold tracking-tight text-text-primary">
+            Reps
+          </h1>
+          <p className="mt-1 text-sm text-text-tertiary">
+            记录每一组，见证每一步
+          </p>
         </div>
 
-        <div className="card">
+        {/* Login card */}
+        <div className="card !p-6">
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
               <label className="mb-1.5 block text-sm font-medium text-text-secondary">
@@ -64,21 +79,30 @@ export default function Login() {
               />
             </div>
 
-            {error && <p className="text-sm text-danger">{error}</p>}
+            {error && (
+              <div className="rounded-lg bg-danger/10 px-3 py-2.5 text-sm text-danger">
+                {error}
+              </div>
+            )}
 
             <button
               className="btn btn-primary w-full"
               disabled={loading}
               type="submit"
             >
-              {loading ? "处理中..." : isLogin ? "登录" : "注册"}
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <span className="loading-spinner !h-4 !w-4 !border-zinc-500 !border-t-white" />
+                  处理中...
+                </span>
+              ) : isLogin ? "登录" : "注册"}
             </button>
           </form>
 
-          <div className="mt-4 text-center text-sm text-text-secondary">
+          <div className="mt-4 text-center text-sm text-text-tertiary">
             {isLogin ? "还没有账号？" : "已有账号？"}
             <button
-              className="ml-2 font-semibold text-primary"
+              className="ml-1 font-semibold text-text-primary hover:underline transition-colors"
               type="button"
               onClick={() => setIsLogin((prev) => !prev)}
             >

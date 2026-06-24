@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.45.4",
+    "@insforge/sdk": "^1.1.6",
     "canvas-confetti": "^1.9.4",
     "react": "^18.3.1",
     "react-activity-calendar": "^3.0.5",

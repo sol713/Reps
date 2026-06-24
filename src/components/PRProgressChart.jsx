@@ -10,11 +10,11 @@ import {
 } from "recharts";
 
 const EXERCISE_COLORS = [
-  "#8b5cf6", // Purple (primary)
-  "#d946ef", // Pink
-  "#6366f1", // Indigo
-  "#10b981", // Emerald (success)
-  "#f59e0b", // Amber (warning)
+  "#18181b", // Zinc-900
+  "#52525b", // Zinc-600
+  "#a1a1aa", // Zinc-400
+  "#71717a", // Zinc-500
+  "#3f3f46"  // Zinc-700
 ];
 
 export default function PRProgressChart({ data }) {

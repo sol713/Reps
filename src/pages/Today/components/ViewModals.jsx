@@ -1,5 +1,4 @@
 import Modal from "../../../components/Modal.jsx";
-import { supabase } from "../../../lib/supabase.js";
 
 export function ViewNoteModal({ viewingNote, onClose }) {
   return (
@@ -44,7 +43,7 @@ export function ViewPhotoModal({ viewingPhoto, onClose }) {
         </div>
         {viewingPhoto?.photo_url && (
           <img
-            src={supabase.storage.from("workout-photos").getPublicUrl(viewingPhoto.photo_url).data?.publicUrl}
+            src={viewingPhoto.photo_url}
             alt="训练照片"
             className="w-full rounded-lg"
           />

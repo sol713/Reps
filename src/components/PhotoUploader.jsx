@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { supabase } from "../lib/supabase.js";
+import { insforge } from "../lib/insforge.js";
 import { useAuth } from "../hooks/useAuth.jsx";
 import { getTodayIsoDate } from "../lib/date.js";
 
@@ -37,12 +37,9 @@ export default function PhotoUploader({ onUpload, onRemove, photoUrl }) {
     const ext = file.name.split(".").pop();
     const fileName = `${user.id}/${today}/${crypto.randomUUID()}.${ext}`;
 
-    const { error: uploadError } = await supabase.storage
+    const { data: uploadData, error: uploadError } = await insforge.storage
       .from("workout-photos")
-      .upload(fileName, file, {
-        cacheControl: "3600",
-        upsert: false
-      });
+      .upload(fileName, file);
 
     if (uploadError) {
       setError("上传失败，请重试");
@@ -51,12 +48,8 @@ export default function PhotoUploader({ onUpload, onRemove, photoUrl }) {
       return;
     }
 
-    const { data: urlData } = supabase.storage
-      .from("workout-photos")
-      .getPublicUrl(fileName);
-
     setUploading(false);
-    onUpload?.(fileName, urlData?.publicUrl);
+    onUpload?.(uploadData?.key ?? fileName, uploadData?.url);
   };
 
   const handleRemove = async () => {

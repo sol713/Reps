@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { supabase } from "../lib/supabase.js";
+import { insforge } from "../lib/insforge.js";
 import { useAuth } from "./useAuth.jsx";
 import { presetTemplates } from "../data/presetTemplates.js";
 
@@ -72,7 +72,7 @@ export function useTemplates() {
     setLoading(true);
     setError("");
 
-    const { data, error: fetchError } = await supabase
+    const { data, error: fetchError } = await insforge.database
       .from("workout_templates")
       .select(TEMPLATE_SELECT)
       .eq("is_archived", false)
@@ -95,7 +95,7 @@ export function useTemplates() {
   const getTemplate = useCallback(async (templateId) => {
     if (!templateId) return null;
 
-    const { data, error: fetchError } = await supabase
+    const { data, error: fetchError } = await insforge.database
       .from("workout_templates")
       .select(TEMPLATE_SELECT)
       .eq("id", templateId)
@@ -112,7 +112,7 @@ export function useTemplates() {
   const createTemplate = useCallback(async ({ name, description, color, exercises }) => {
     if (!user || !name) return null;
 
-    const { data: template, error: createError } = await supabase
+    const { data: template, error: createError } = await insforge.database
       .from("workout_templates")
       .insert({
         user_id: user.id,
@@ -141,7 +141,7 @@ export function useTemplates() {
         notes: ex.notes ?? ""
       }));
 
-      const { error: insertError } = await supabase
+      const { error: insertError } = await insforge.database
         .from("template_exercises")
         .insert(exerciseRows);
 
@@ -158,7 +158,7 @@ export function useTemplates() {
   const updateTemplate = useCallback(async (templateId, { name, description, color, exercises }) => {
     if (!templateId) return false;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await insforge.database
       .from("workout_templates")
       .update({
         name,
@@ -173,7 +173,7 @@ export function useTemplates() {
     }
 
     if (exercises !== undefined) {
-      const { error: deleteError } = await supabase
+      const { error: deleteError } = await insforge.database
         .from("template_exercises")
         .delete()
         .eq("template_id", templateId);
@@ -196,7 +196,7 @@ export function useTemplates() {
           notes: ex.notes ?? ""
         }));
 
-        const { error: insertError } = await supabase
+        const { error: insertError } = await insforge.database
           .from("template_exercises")
           .insert(exerciseRows);
 
@@ -214,7 +214,7 @@ export function useTemplates() {
   const deleteTemplate = useCallback(async (templateId) => {
     if (!templateId) return false;
 
-    const { error: deleteError } = await supabase
+    const { error: deleteError } = await insforge.database
       .from("workout_templates")
       .delete()
       .eq("id", templateId);
@@ -231,7 +231,7 @@ export function useTemplates() {
   const archiveTemplate = useCallback(async (templateId) => {
     if (!templateId) return false;
 
-    const { error: updateError } = await supabase
+    const { error: updateError } = await insforge.database
       .from("workout_templates")
       .update({ is_archived: true })
       .eq("id", templateId);
@@ -260,7 +260,7 @@ export function useTemplates() {
   const importPresetTemplates = useCallback(async () => {
     if (!user) return { ok: false, count: 0 };
 
-    const { data: exercises } = await supabase
+    const { data: exercises } = await insforge.database
       .from("exercises")
       .select("id,name,body_part");
 
@@ -295,7 +295,7 @@ export function useTemplates() {
       }
 
       for (const missing of missingExercises) {
-        const { data: newEx } = await supabase
+        const { data: newEx } = await insforge.database
           .from("exercises")
           .insert({
             name: missing.name,

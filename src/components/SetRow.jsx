@@ -1,14 +1,9 @@
 import { useRef, useState } from "react";
 import { RPEBadge } from "./RPESelector.jsx";
 import { NoteBadge } from "./SetNoteInput.jsx";
-import { supabase } from "../lib/supabase.js";
 
-function PhotoThumbnail({ photoPath, onClick }) {
-  if (!photoPath) return null;
-
-  const { data } = supabase.storage
-    .from("workout-photos")
-    .getPublicUrl(photoPath);
+function PhotoThumbnail({ photoUrl, onClick }) {
+  if (!photoUrl) return null;
 
   return (
     <button
@@ -17,7 +12,7 @@ function PhotoThumbnail({ photoPath, onClick }) {
       onClick={onClick}
     >
       <img
-        src={data?.publicUrl}
+        src={photoUrl}
         alt="训练照片"
         className="h-full w-full object-cover"
       />
@@ -119,7 +114,7 @@ export default function SetRow({ set, onDelete = () => {}, onEdit = () => {}, on
           </button>
           {set.photo_url && (
             <PhotoThumbnail
-              photoPath={set.photo_url}
+              photoUrl={set.photo_url}
               onClick={(event) => {
                 event.stopPropagation();
                 onViewPhoto(set);

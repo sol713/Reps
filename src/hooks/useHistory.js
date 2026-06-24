@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { normalizeSets } from "../lib/sets.js";
-import { supabase } from "../lib/supabase.js";
+import { insforge } from "../lib/insforge.js";
 import { useAuth } from "./useAuth.jsx";
 
 const LOG_SELECT =
@@ -22,7 +22,7 @@ export function useHistory() {
     setLoading(true);
     setError("");
 
-    const { data, error: fetchError } = await supabase
+    const { data, error: fetchError } = await insforge.database
       .from("workout_logs")
       .select(LOG_SELECT)
       .order("date", { ascending: false });
